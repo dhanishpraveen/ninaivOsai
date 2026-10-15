@@ -1,0 +1,23 @@
+# Node & Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.oxlintrc.json
+*.local
+
+# Python & Backend
+__pycache__/
+*.py[cod]
+*$py.class
+backend/__pycache__/
+.env
+backend/.env
+venv/
+.venv/
+env/
+
+# IDE & OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
