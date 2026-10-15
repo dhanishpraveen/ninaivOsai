@@ -18,7 +18,7 @@ const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 const SUPPORTED_EXTENSIONS = ['mp3', 'wav', 'm4a', 'ogg', 'webm', 'flac', 'aac'];
 const SUPPORTED_MIME_PREFIXES = ['audio/'];
 
-export default function AudioUploader({ audioData, onAudioSelected, onAudioRemoved }) {
+export default function AudioUploader({ audioData, onAudioSelected, onAudioRemoved, onTranscribeClick }) {
   const fileInputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [validationError, setValidationError] = useState(null);
@@ -287,11 +287,31 @@ export default function AudioUploader({ audioData, onAudioSelected, onAudioRemov
             <AudioPlayer src={audioData.url} title={audioData.name} />
           </div>
 
-          <div className="text-[11px] text-charcoal-500 flex items-center gap-1.5 bg-ivory-50 p-2.5 rounded-lg border border-ivory-200">
-            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-            <span>
-              ஒலிப்பதிவுக் கோப்பு வெற்றிகரமாக சரிபார்க்கப்பட்டு தயாராக உள்ளது. (Audio ready in browser session).
-            </span>
+          {/* Audio Ready for Transcription Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border border-emerald-200 bg-emerald-50/80">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-800">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div>
+                <span className="font-bold text-xs sm:text-sm text-emerald-950 block">
+                  Audio ready for transcription
+                </span>
+                <span className="text-[11px] text-emerald-800 font-sans">
+                  ஒலிப்பதிவு உரைமாற்றத்திற்குத் தயார் • {audioData.extension} ({audioData.sizeFormatted})
+                </span>
+              </div>
+            </div>
+
+            {onTranscribeClick && (
+              <button
+                type="button"
+                onClick={onTranscribeClick}
+                className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-maroon-800 px-3.5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-maroon-900 transition-colors shrink-0"
+              >
+                <span>Continue to Transcript Review</span>
+              </button>
+            )}
           </div>
         </div>
       )}

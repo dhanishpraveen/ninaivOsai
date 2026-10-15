@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import AudioPlayer, { formatTime } from './AudioPlayer';
 
-export default function AudioRecorder({ audioData, onAudioRecorded, onAudioDiscarded }) {
+export default function AudioRecorder({ audioData, onAudioRecorded, onAudioDiscarded, onTranscribeClick }) {
   const [recorderState, setRecorderState] = useState('idle'); // 'idle' | 'requesting' | 'recording' | 'paused' | 'stopped'
   const [elapsedTime, setElapsedTime] = useState(0);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -439,11 +439,31 @@ export default function AudioRecorder({ audioData, onAudioRecorded, onAudioDisca
             <AudioPlayer src={activeRecording.url} title={activeRecording.name} />
           </div>
 
-          <div className="text-[11px] text-charcoal-500 flex items-center gap-1.5 bg-maroon-50/50 p-2.5 rounded-lg border border-maroon-100">
-            <CheckCircle2 className="h-3.5 w-3.5 text-maroon-700 shrink-0" />
-            <span>
-              நேரடி ஒலிப்பதிவு வெற்றிகரமாக பிடிக்கப்பட்டுள்ளது. (Audio recording captured and verified).
-            </span>
+          {/* Audio Ready for Transcription Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border border-emerald-200 bg-emerald-50/80">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-800">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div>
+                <span className="font-bold text-xs sm:text-sm text-emerald-950 block">
+                  Audio ready for transcription
+                </span>
+                <span className="text-[11px] text-emerald-800 font-sans">
+                  ஒலிப்பதிவு உரைமாற்றத்திற்குத் தயார் • MediaRecorder ({activeRecording.durationFormatted})
+                </span>
+              </div>
+            </div>
+
+            {onTranscribeClick && (
+              <button
+                type="button"
+                onClick={onTranscribeClick}
+                className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-maroon-800 px-3.5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-maroon-900 transition-colors shrink-0"
+              >
+                <span>Continue to Transcript Review</span>
+              </button>
+            )}
           </div>
         </div>
       )}

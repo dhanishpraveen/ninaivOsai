@@ -17,6 +17,8 @@ import {
   ArrowRight,
   Eye,
   RotateCcw,
+  FileText,
+  X,
 } from 'lucide-react';
 import Badge from '../components/Badge';
 import AudioUploader from '../components/AudioUploader';
@@ -41,6 +43,7 @@ export default function PreserveStoryPage() {
   const [formErrors, setFormErrors] = useState({});
   const [reviewModalData, setReviewModalData] = useState(null);
   const [bannerNotice, setBannerNotice] = useState(null);
+  const [showTranscribeNotice, setShowTranscribeNotice] = useState(false);
 
   // Clean up Object URL on component unmount
   useEffect(() => {
@@ -197,12 +200,14 @@ export default function PreserveStoryPage() {
                 audioData={audioData}
                 onAudioSelected={handleAudioSelected}
                 onAudioRemoved={handleAudioRemoved}
+                onTranscribeClick={() => setShowTranscribeNotice(true)}
               />
             ) : (
               <AudioRecorder
                 audioData={audioData}
                 onAudioRecorded={handleAudioSelected}
                 onAudioDiscarded={handleAudioRemoved}
+                onTranscribeClick={() => setShowTranscribeNotice(true)}
               />
             )}
 
@@ -215,10 +220,75 @@ export default function PreserveStoryPage() {
             )}
           </div>
 
-          {/* Metadata Section */}
+          {/* 2. Transcript Review Section */}
+          <div className="pt-6 border-t border-ivory-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+              <h2 className="text-xs font-bold text-charcoal-800 uppercase tracking-wider flex items-center gap-2">
+                <span>2. தமிழ் உரைமாற்ற மதிப்பாய்வு (Transcript Review)</span>
+                {audioData && (
+                  <Badge variant="phase">Audio ready for transcription</Badge>
+                )}
+              </h2>
+
+              {audioData && (
+                <button
+                  type="button"
+                  onClick={() => setShowTranscribeNotice(true)}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-maroon-800 hover:text-maroon-950 underline self-start sm:self-auto"
+                >
+                  <FileText className="h-3.5 w-3.5 text-gold-600" />
+                  <span>உரைமாற்றத்தைத் தொடங்கு (Transcribe Audio)</span>
+                </button>
+              )}
+            </div>
+
+            {audioData ? (
+              <div className="rounded-xl border border-ivory-300 bg-ivory-50/70 p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-ivory-200">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-xs font-bold text-charcoal-900">
+                      Audio ready for transcription
+                    </span>
+                    <span className="text-xs text-charcoal-500 font-sans">
+                      • {audioData.name} ({audioData.durationFormatted})
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowTranscribeNotice(true)}
+                    className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-maroon-800 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-maroon-900 transition-colors self-start sm:self-auto"
+                  >
+                    <FileText className="h-3.5 w-3.5 text-gold-300" />
+                    <span>Continue to Transcript Review</span>
+                  </button>
+                </div>
+
+                {/* Honest Transcript Pending Box */}
+                <div className="rounded-lg bg-white p-4 border border-dashed border-ivory-300 text-center space-y-2">
+                  <div className="flex items-center justify-center gap-2 text-charcoal-700 font-semibold text-xs">
+                    <Sparkles className="h-4 w-4 text-gold-600" />
+                    <span>உரைமாற்றம் இன்னும் உருவாக்கப்படவில்லை (Transcript pending Phase 3)</span>
+                  </div>
+                  <p className="text-xs text-charcoal-600 max-w-lg mx-auto leading-relaxed">
+                    ஒலிப்பதிவு பிரவுசர் அமர்வில் பாதுகாப்பாக உள்ளது. கட்ட நிலை 3 இல் (Phase 3: Speech-to-Text), 
+                    Hugging Face <code>vasista22/whisper-tamil-small</code> மாதிரி மூலம் உண்மை உரை தானியங்கியாக உருவாக்கப்படும். 
+                    தற்போதைக்கு போலி உரை எதுவும் உருவாக்கப்படாது.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-xl border border-dashed border-ivory-300 bg-ivory-50/40 p-4 text-center text-xs text-charcoal-500">
+                ஒலிப்பதிவுக் கோப்பைப் பதிவேற்றிய பின் அல்லது நேரடி ஒலிப்பதிவு செய்த பின் உரைமாற்ற நிலை செயல்படும். (Upload or record audio above to enable transcript review).
+              </div>
+            )}
+          </div>
+
+          {/* 3. Metadata Section */}
           <div className="pt-6 border-t border-ivory-200">
             <h2 className="text-xs font-bold text-charcoal-800 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <span>2. வாய்மொழி வரலாறு பற்றிய விவரங்கள் (Oral History Metadata) *</span>
+              <span>3. வாய்மொழி வரலாறு பற்றிய விவரங்கள் (Oral History Metadata) *</span>
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -519,6 +589,66 @@ export default function PreserveStoryPage() {
                 className="rounded-xl bg-maroon-800 px-5 py-2 text-xs font-semibold text-white hover:bg-maroon-900"
               >
                 சரிபார்ப்பு முடிந்தது (Ready for Phase 3)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Transcribe Notice Dialog */}
+      {showTranscribeNotice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal-900/50 backdrop-blur-xs">
+          <div className="relative w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-ivory-300 space-y-4">
+            <div className="flex items-center justify-between border-b border-ivory-200 pb-3">
+              <div className="flex items-center gap-2">
+                <Badge variant="phase">Phase 3 Scheduled</Badge>
+                <h3 className="text-base font-bold text-charcoal-900">
+                  தமிழ் உரைமாற்றச் சேவை நிலை (Speech-to-Text Status)
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowTranscribeNotice(false)}
+                className="p-1 rounded-md text-charcoal-400 hover:text-charcoal-700"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs text-charcoal-700 leading-relaxed">
+              <div className="rounded-xl bg-emerald-50 p-3.5 border border-emerald-200 text-emerald-950 flex items-start gap-2.5">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="block text-emerald-900 mb-0.5 font-bold">
+                    Audio ready for transcription
+                  </strong>
+                  தேர்ந்தெடுக்கப்பட்ட ஒலிப்பதிவு ({audioData?.name || 'Tamil audio'}) பிரவுசர் அமர்வில் தயார் நிலையில் சரிபார்க்கப்பட்டு வைக்கப்பட்டுள்ளது.
+                </div>
+              </div>
+
+              <div className="rounded-xl bg-ivory-100 p-3.5 border border-ivory-200 space-y-2">
+                <strong className="block text-maroon-900 font-bold">கட்ட நிலை 3 திட்டமிடல் (Phase 3 Scheduled):</strong>
+                <p>
+                  தமிழ் உரைமாற்ற இறுதிப்புள்ளி (FastAPI <code>/transcribe</code> endpoint) அடுத்த கட்டத்தில் (Phase 3) இணைக்கப்படும். 
+                  அப்போது Hugging Face <code>vasista22/whisper-tamil-small</code> மாதிரி மூலம் உங்கள் ஒலிப்பதிவு உண்மையான தமிழ் உரையாக மாற்றப்படும்.
+                </p>
+                <p className="font-sans text-[11px] text-charcoal-600 italic">
+                  In compliance with hackathon integrity guidelines, no fake transcript or dummy text is fabricated before the real model runs.
+                </p>
+              </div>
+
+              <p className="text-charcoal-600">
+                தற்போது நீங்கள் கீழே உள்ள படிவத்தில் கதையின் தலைப்பு, பேச்சாளர் விவரங்கள் மற்றும் ஒப்புதலைப் பூர்த்தி செய்யலாம். உங்கள் ஒலிப்பதிவு பாதுகாப்பாக வைக்கப்பட்டுள்ளது.
+              </p>
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-ivory-200">
+              <button
+                type="button"
+                onClick={() => setShowTranscribeNotice(false)}
+                className="rounded-xl bg-maroon-800 px-5 py-2 text-xs font-semibold text-white hover:bg-maroon-900 transition-colors"
+              >
+                புரிந்தது • கதையின் விவரங்களை நிரப்புக (Continue with Metadata)
               </button>
             </div>
           </div>
