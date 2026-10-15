@@ -1,100 +1,190 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  Settings,
-  Globe,
-  Sliders,
-  Volume2,
-  Database,
   Cpu,
   CheckCircle2,
-  AlertCircle,
-  HelpCircle,
-  User,
+  Globe,
+  LogOut,
+  ShieldCheck,
 } from 'lucide-react';
 import Badge from '../components/Badge';
+import { useAuth } from '../context/AuthContext';
+import { TAMIL_STRINGS } from '../constants/tamilStrings';
 
 export default function SettingsPage() {
+  const { user, userName, userInitials, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'settings'
   const [preferences, setPreferences] = useState({
     language: 'ta',
-    dialectPreset: 'all',
     audioQuality: 'high',
-    autoPlayAudio: false,
     showTamilTranscriptsFirst: true,
   });
 
   const [savedStatus, setSavedStatus] = useState(false);
 
-  const handleToggle = (key) => {
-    setPreferences((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  };
-
-  const handleSavePreferences = (e) => {
+  const handleSave = (e) => {
     e.preventDefault();
     setSavedStatus(true);
     setTimeout(() => setSavedStatus(false), 3000);
   };
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate('/login');
+    } catch (err) {
+      console.error('[Settings] Logout error:', err);
+    }
+  };
+
+  const userEmail = user?.email || 'archivist@ninaivosai.org';
+
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-ivory-300 pb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-bold text-charcoal-900">
-              அமைப்புகள் மற்றும் விருப்பத்தேர்வுகள் (Settings)
-            </h1>
-            <Badge variant="demo">Preferences</Badge>
+    <div className="space-y-6 max-w-4xl mx-auto font-sans">
+      {/* Profile Header */}
+      <div className="rounded-3xl border border-ivory-300 bg-white p-6 sm:p-8 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-ivory-200">
+          <div className="flex items-center gap-4">
+            <div className="flex h-18 w-18 shrink-0 items-center justify-center rounded-full bg-forest-900 text-emerald-300 text-xl font-extrabold border-2 border-forest-600 shadow-sm font-tamil">
+              {userInitials}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-extrabold text-charcoal-900 font-tamil">
+                  {userName}
+                </h1>
+                <Badge variant="phase">ஆவணக் காப்பாளர்</Badge>
+              </div>
+              <p className="text-xs text-charcoal-500 font-tamil mt-0.5">
+                {userEmail} • {TAMIL_STRINGS.settings.userRole}
+              </p>
+            </div>
           </div>
-          <p className="text-xs sm:text-sm text-charcoal-600 font-sans mt-1">
-            Application configurations, language display modes, and backend pipeline status.
-          </p>
+
+          <div className="flex items-center gap-2 self-start sm:self-auto font-tamil">
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition-colors cursor-pointer"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span>{TAMIL_STRINGS.settings.logoutButton}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 4 Profile Stats in Pure Tamil */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 font-tamil">
+          <div className="rounded-2xl bg-ivory-50 p-4 border border-ivory-200 text-center">
+            <span className="text-2xl font-extrabold text-forest-900 block font-sans">12</span>
+            <span className="text-xs text-charcoal-600">{TAMIL_STRINGS.settings.stats.recordedStories}</span>
+          </div>
+
+          <div className="rounded-2xl bg-ivory-50 p-4 border border-ivory-200 text-center">
+            <span className="text-2xl font-extrabold text-forest-900 block font-sans">5</span>
+            <span className="text-xs text-charcoal-600">{TAMIL_STRINGS.settings.stats.bookmarks}</span>
+          </div>
+
+          <div className="rounded-2xl bg-ivory-50 p-4 border border-ivory-200 text-center">
+            <span className="text-2xl font-extrabold text-forest-900 block font-sans">24</span>
+            <span className="text-xs text-charcoal-600">{TAMIL_STRINGS.settings.stats.questionsAsked}</span>
+          </div>
+
+          <div className="rounded-2xl bg-ivory-50 p-4 border border-ivory-200 text-center">
+            <span className="text-2xl font-extrabold text-forest-900 block font-sans">3</span>
+            <span className="text-xs text-charcoal-600">{TAMIL_STRINGS.settings.stats.collections}</span>
+          </div>
         </div>
       </div>
 
-      <form onSubmit={handleSavePreferences} className="space-y-6">
-        {/* Profile Card */}
-        <div className="rounded-2xl border border-ivory-300 bg-white p-6 shadow-xs">
-          <div className="flex items-center gap-2 border-b border-ivory-200 pb-3 mb-4">
-            <User className="h-4 w-4 text-maroon-700" />
+      {/* Tabs Row */}
+      <div className="flex border-b border-ivory-300 gap-4 text-xs font-semibold text-charcoal-600 font-tamil">
+        <button
+          type="button"
+          onClick={() => setActiveTab('profile')}
+          className={`pb-3 border-b-2 transition-colors cursor-pointer ${
+            activeTab === 'profile'
+              ? 'border-forest-800 text-forest-950 font-bold'
+              : 'border-transparent hover:text-charcoal-900'
+          }`}
+        >
+          {TAMIL_STRINGS.settings.tabs.pipeline}
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('settings')}
+          className={`pb-3 border-b-2 transition-colors cursor-pointer ${
+            activeTab === 'settings'
+              ? 'border-forest-800 text-forest-950 font-bold'
+              : 'border-transparent hover:text-charcoal-900'
+          }`}
+        >
+          {TAMIL_STRINGS.settings.tabs.preferences}
+        </button>
+      </div>
+
+      {/* Tab 1: System Pipeline Status in Pure Tamil */}
+      {activeTab === 'profile' && (
+        <div className="rounded-3xl border border-ivory-300 bg-white p-6 shadow-xs space-y-4 font-tamil">
+          <div className="flex items-center gap-2 border-b border-ivory-200 pb-3">
+            <Cpu className="h-4 w-4 text-forest-700" />
             <h2 className="text-sm font-bold text-charcoal-900 uppercase tracking-wider">
-              பயனாளர் சுயவிவரம் (Contributor Profile)
+              கணினி தொழில்நுட்ப கட்டமைப்பு நிலை
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-charcoal-700 mb-1">
-                பெயர் (Contributor / Archivist Name)
-              </label>
-              <input
-                type="text"
-                defaultValue="கள ஆய்வாளர் (Field Researcher)"
-                className="w-full rounded-lg border border-ivory-300 bg-white px-3 py-2 text-sm text-charcoal-900 focus:border-maroon-500 focus:outline-none focus:ring-1 focus:ring-maroon-500"
-              />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div className="rounded-2xl bg-ivory-50 p-4 border border-ivory-200 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-charcoal-900">{TAMIL_STRINGS.settings.pipeline.backend}</span>
+                <span className="text-emerald-700 font-bold flex items-center gap-1">
+                  <CheckCircle2 className="h-3.5 w-3.5" /> {TAMIL_STRINGS.settings.pipeline.backendReady}
+                </span>
+              </div>
+              <p className="text-charcoal-500 font-sans">Port 8001 • CORS: localhost:5173</p>
             </div>
-            <div>
-              <label className="block text-xs font-medium text-charcoal-700 mb-1">
-                பங்களிப்பாளர் பங்கு (Archival Role)
-              </label>
-              <input
-                type="text"
-                defaultValue="வாய்மொழி வரலாற்று ஆவணப் பதிவாளர் (Oral Historian)"
-                disabled
-                className="w-full rounded-lg border border-ivory-200 bg-ivory-100 px-3 py-2 text-sm text-charcoal-600 cursor-not-allowed"
-              />
+
+            <div className="rounded-2xl bg-ivory-50 p-4 border border-ivory-200 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-charcoal-900">{TAMIL_STRINGS.settings.pipeline.stt}</span>
+                <span className="text-emerald-700 font-bold flex items-center gap-1">
+                  <CheckCircle2 className="h-3.5 w-3.5" /> {TAMIL_STRINGS.settings.pipeline.sttReady}
+                </span>
+              </div>
+              <p className="text-charcoal-500 font-sans">vasista22/whisper-tamil-small</p>
+            </div>
+
+            <div className="rounded-2xl bg-ivory-50 p-4 border border-ivory-200 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-charcoal-900">{TAMIL_STRINGS.settings.pipeline.supabase}</span>
+                <span className="text-emerald-700 font-bold flex items-center gap-1">
+                  <CheckCircle2 className="h-3.5 w-3.5" /> {TAMIL_STRINGS.settings.pipeline.supabaseReady}
+                </span>
+              </div>
+              <p className="text-charcoal-500 font-sans">PostgreSQL, Auth & Storage</p>
+            </div>
+
+            <div className="rounded-2xl bg-ivory-50 p-4 border border-ivory-200 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-charcoal-900">{TAMIL_STRINGS.settings.pipeline.rag}</span>
+                <span className="text-emerald-700 font-bold flex items-center gap-1">
+                  <CheckCircle2 className="h-3.5 w-3.5" /> {TAMIL_STRINGS.settings.pipeline.ragReady}
+                </span>
+              </div>
+              <p className="text-charcoal-500 font-sans">Gemini 3.1 Flash Lite RAG</p>
             </div>
           </div>
         </div>
+      )}
 
-        {/* Display & Language Preferences */}
-        <div className="rounded-2xl border border-ivory-300 bg-white p-6 shadow-xs">
-          <div className="flex items-center gap-2 border-b border-ivory-200 pb-3 mb-4">
-            <Globe className="h-4 w-4 text-maroon-700" />
+      {/* Tab 2: Language & Display Settings in Pure Tamil */}
+      {activeTab === 'settings' && (
+        <form onSubmit={handleSave} className="rounded-3xl border border-ivory-300 bg-white p-6 shadow-xs space-y-6 font-tamil">
+          <div className="flex items-center gap-2 border-b border-ivory-200 pb-3">
+            <Globe className="h-4 w-4 text-forest-700" />
             <h2 className="text-sm font-bold text-charcoal-900 uppercase tracking-wider">
-              மொழி மற்றும் காட்சி விருப்பங்கள் (Language & Display)
+              {TAMIL_STRINGS.settings.preferences.title}
             </h2>
           </div>
 
@@ -102,108 +192,57 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold text-charcoal-900">
-                  முதன்மை இடைமுக மொழி (Primary UI Language)
+                  {TAMIL_STRINGS.settings.preferences.languageLabel}
                 </p>
-                <p className="text-xs text-charcoal-500 font-sans">
-                  Dual Tamil/English labels are rendered throughout the application.
+                <p className="text-xs text-charcoal-500 mt-0.5">
+                  இத்தளத்தின் அனைத்துப் பக்கங்களும் இயல்பாகவே முழுமையான தமிழில் வடிவமைக்கப்பட்டுள்ளன.
                 </p>
               </div>
-              <select
-                value={preferences.language}
-                onChange={(e) => setPreferences({ ...preferences, language: e.target.value })}
-                className="rounded-lg border border-ivory-300 bg-white px-3 py-1.5 text-xs font-medium text-charcoal-800"
-              >
-                <option value="ta">தமிழ் (Tamil Primary)</option>
-                <option value="en">English (Secondary)</option>
-              </select>
+              <div className="rounded-xl border border-ivory-300 bg-ivory-50 px-3 py-1.5 text-xs font-semibold text-charcoal-800">
+                {TAMIL_STRINGS.settings.preferences.tamilOnly}
+              </div>
             </div>
 
             <div className="flex items-center justify-between border-t border-ivory-200 pt-3">
               <div>
                 <p className="text-sm font-semibold text-charcoal-900">
-                  தமிழில் உரையை முன்னிலைப்படுத்தல் (Prioritize Tamil Unicode Transcripts)
+                  {TAMIL_STRINGS.settings.preferences.highlightTamil}
                 </p>
-                <p className="text-xs text-charcoal-500 font-sans">
-                  Show verbatim Tamil text above English summaries in archive stories.
+                <p className="text-xs text-charcoal-500 mt-0.5">
+                  {TAMIL_STRINGS.settings.preferences.highlightTamilDesc}
                 </p>
               </div>
               <input
                 type="checkbox"
                 checked={preferences.showTamilTranscriptsFirst}
-                onChange={() => handleToggle('showTamilTranscriptsFirst')}
-                className="h-4 w-4 rounded border-ivory-300 text-maroon-800 focus:ring-maroon-500"
+                onChange={() =>
+                  setPreferences((p) => ({
+                    ...p,
+                    showTamilTranscriptsFirst: !p.showTamilTranscriptsFirst,
+                  }))
+                }
+                className="h-4 w-4 rounded border-ivory-300 text-forest-800 focus:ring-forest-600 cursor-pointer"
               />
             </div>
           </div>
-        </div>
 
-        {/* System & Architecture Status Card */}
-        <div className="rounded-2xl border border-ivory-300 bg-white p-6 shadow-xs">
-          <div className="flex items-center gap-2 border-b border-ivory-200 pb-3 mb-4">
-            <Cpu className="h-4 w-4 text-maroon-700" />
-            <h2 className="text-sm font-bold text-charcoal-900 uppercase tracking-wider">
-              கட்டமைப்பு மற்றும் சேவைகள் நிலை (System & Pipeline Status)
-            </h2>
+          {savedStatus && (
+            <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-xs text-emerald-800 flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+              <span>{TAMIL_STRINGS.settings.preferences.savedSuccess}</span>
+            </div>
+          )}
+
+          <div className="flex justify-end pt-2">
+            <button
+              type="submit"
+              className="rounded-xl bg-forest-800 px-6 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-forest-900 transition-colors cursor-pointer"
+            >
+              {TAMIL_STRINGS.settings.preferences.saveButton}
+            </button>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div className="rounded-xl bg-ivory-50 p-3.5 border border-ivory-200 space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-charcoal-800">FastAPI Backend:</span>
-                <span className="text-emerald-700 font-bold flex items-center gap-1">
-                  <CheckCircle2 className="h-3 w-3" /> Ready (GET /health)
-                </span>
-              </div>
-              <p className="text-charcoal-500 font-sans">CORS configured for Vite localhost:5173</p>
-            </div>
-
-            <div className="rounded-xl bg-ivory-50 p-3.5 border border-ivory-200 space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-charcoal-800">Tamil Whisper Model:</span>
-                <span className="text-amber-700 font-bold">Planned for Phase 3</span>
-              </div>
-              <p className="text-charcoal-500 font-sans">vasista22/whisper-tamil-small (Isolated service)</p>
-            </div>
-
-            <div className="rounded-xl bg-ivory-50 p-3.5 border border-ivory-200 space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-charcoal-800">Supabase Storage & DB:</span>
-                <span className="text-amber-700 font-bold">Planned for Phase 6</span>
-              </div>
-              <p className="text-charcoal-500 font-sans">Audio bucket + stories relational schema</p>
-            </div>
-
-            <div className="rounded-xl bg-ivory-50 p-3.5 border border-ivory-200 space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-charcoal-800">Heritage AI Agent:</span>
-                <span className="text-amber-700 font-bold">Planned for Phase 8</span>
-              </div>
-              <p className="text-charcoal-500 font-sans">Evidence-grounded Tamil RAG pipeline</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Saved Feedback Alert */}
-        {savedStatus && (
-          <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3.5 text-xs text-emerald-800 flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-            <span>விருப்பத்தேர்வுகள் சேமிக்கப்பட்டன (Client-side preferences updated).</span>
-          </div>
-        )}
-
-        {/* Save Button */}
-        <div className="flex items-center justify-between pt-2">
-          <p className="text-xs text-charcoal-500">
-            * Note: Account authentication and backend database sync are not fabricated in Phase 1.
-          </p>
-          <button
-            type="submit"
-            className="rounded-xl bg-maroon-800 px-5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-maroon-900 transition-colors"
-          >
-            விருப்பங்களைச் சேமிக்க (Save Preferences)
-          </button>
-        </div>
-      </form>
+        </form>
+      )}
     </div>
   );
 }

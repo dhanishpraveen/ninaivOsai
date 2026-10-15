@@ -68,7 +68,7 @@ export default function AudioRecorder({ audioData, onAudioRecorded, onAudioDisca
 
     if (unsupportedBrowser) {
       setErrorMessage(
-        'உங்கள் உலாவி நேரடி ஒலிப்பதிவை (MediaRecorder API) ஆதரிக்கவில்லை. தயவுசெய்து Chrome, Firefox, அல்லது Edge உலாவியைப் பயன்படுத்தவும் அல்லது ஒலி கோப்பைப் பதிவேற்றவும். (MediaRecorder not supported).'
+        'உங்கள் உலாவி நேரடி ஒலிப்பதிவை ஆதரிக்கவில்லை. தயவுசெய்து Chrome, Firefox அல்லது Edge உலாவியைப் பயன்படுத்தவும் அல்லது ஒலிக் கோப்பைப் பதிவேற்றவும்.'
       );
       return;
     }
@@ -114,7 +114,7 @@ export default function AudioRecorder({ audioData, onAudioRecorded, onAudioDisca
         const audioBlob = new Blob(chunksRef.current, { type: mime });
 
         if (audioBlob.size === 0) {
-          setErrorMessage('ஒலிப்பதிவு எதுவும் சேமிக்கப்படவில்லை. தயவுசெய்து மீண்டும் பதிவு செய்யவும். (Recording was empty).');
+          setErrorMessage('ஒலிப்பதிவு எதுவும் சேமிக்கப்படவில்லை. தயவுசெய்து மீண்டும் பதிவு செய்யவும்.');
           setRecorderState('idle');
           return;
         }
@@ -154,15 +154,15 @@ export default function AudioRecorder({ audioData, onAudioRecorded, onAudioDisca
 
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
         setErrorMessage(
-          'மைக்ரோஃபோன் அனுமதி மறுக்கப்பட்டது. தயவுசெய்து உங்கள் உலாவியின் முகவரிப் பட்டியில் உள்ள அனுமதி அமைப்புகளில் மைக்ரோஃபோனை அனுமதிக்கவும். (Microphone permission denied).'
+          'ஒலிவாங்கி அனுமதி மறுக்கப்பட்டது. தயவுசெய்து உங்கள் உலாவியின் முகவரிப் பட்டியில் உள்ள அமைப்புகளில் ஒலிவாங்கியை அனுமதிக்கவும்.'
         );
       } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
         setErrorMessage(
-          'உங்கள் சாதனத்தில் மைக்ரோஃபோன் எதுவும் கண்டறியப்படவில்லை. தயவுசெய்து மைக்ரோஃபோனை இணைக்கவும் அல்லது ஆடியோ கோப்பைப் பதிவேற்றவும். (No microphone found).'
+          'உங்கள் சாதனத்தில் ஒலிவாங்கி எதுவும் கண்டறியப்படவில்லை. தயவுசெய்து ஒலிவாங்கியை இணைக்கவும் அல்லது ஆடியோ கோப்பைப் பதிவேற்றவும்.'
         );
       } else {
         setErrorMessage(
-          `ஒலிப்பதிவைத் தொடங்குவதில் பிழை ஏற்பட்டது: ${err.message || 'அறியப்படாத பிழை'} (Recording error).`
+          `ஒலிப்பதிவைத் தொடங்குவதில் பிழை ஏற்பட்டது: ${err.message || 'அறியப்படாத பிழை'}`
         );
       }
     }
@@ -251,43 +251,46 @@ export default function AudioRecorder({ audioData, onAudioRecorded, onAudioDisca
 
       {/* Active Recording State or Idle */}
       {!activeRecording ? (
-        <div className="border-2 border-dashed border-maroon-200 rounded-2xl p-8 text-center bg-gradient-to-b from-maroon-50/20 via-ivory-50/30 to-white">
+        <div className="border border-ivory-300 rounded-3xl p-8 sm:p-10 text-center bg-ivory-50/40 shadow-xs">
           {/* Recording UI: IDLE / REQUESTING */}
           {recorderState === 'idle' || recorderState === 'requesting' ? (
             <div className="space-y-4 max-w-md mx-auto">
-              <div className="relative inline-block">
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-maroon-800 text-gold-300 shadow-md mx-auto">
-                  <Mic className="h-8 w-8" />
+              {/* Circular Red Microphone Button matching Screen 5 in Reference */}
+              <div className="relative py-2 flex flex-col items-center justify-center">
+                {/* Horizontal Waveform lines matching Screen 5 */}
+                <div className="flex items-center justify-center gap-1.5 h-12 w-full max-w-xs mb-3 opacity-60">
+                  {[20, 35, 15, 45, 60, 30, 75, 40, 25, 60, 45, 30, 50, 25, 40].map((h, i) => (
+                    <span
+                      key={i}
+                      className="w-1 rounded-full bg-charcoal-300"
+                      style={{ height: `${h}%` }}
+                    />
+                  ))}
                 </div>
-              </div>
 
-              <div>
-                <h3 className="text-base font-bold text-charcoal-900">
-                  நேரடி உலாவி ஒலிப்பதிவு (Direct Browser Audio Recording)
-                </h3>
-                <p className="text-xs text-charcoal-600 mt-1 leading-relaxed">
-                  Click the button below to grant microphone access and capture Tamil oral narratives directly in the field.
-                </p>
-              </div>
-
-              <div>
                 <button
                   type="button"
                   onClick={startRecording}
                   disabled={unsupportedBrowser || recorderState === 'requesting'}
-                  className="inline-flex items-center gap-2 rounded-xl bg-maroon-800 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-maroon-900 transition-all disabled:opacity-50"
+                  className="flex h-18 w-18 items-center justify-center rounded-full bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/30 transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 cursor-pointer"
+                  aria-label="ஒலிப்பதிவைத் தொடங்கு"
                 >
-                  <Radio className="h-4 w-4 text-gold-300 animate-pulse" />
-                  <span>
-                    {recorderState === 'requesting'
-                      ? 'அனுமதி பெறப்படுகிறது... (Requesting Mic...)'
-                      : 'ஒலிப்பதிவைத் தொடங்கு (Start Recording)'}
-                  </span>
+                  <Mic className="h-8 w-8" />
                 </button>
+
+                {/* Timer: 00:00 & Subtitle matching Screen 5 */}
+                <div className="font-mono text-2xl font-extrabold text-charcoal-900 mt-3">
+                  00:00
+                </div>
+                <p className="text-xs text-charcoal-500 font-sans mt-0.5">
+                  {recorderState === 'requesting'
+                    ? 'ஒலிவாங்கி அனுமதி கோரப்படுகிறது...'
+                    : 'ஒலிப்பதிவைத் தொடங்க அழுத்தவும்'}
+                </p>
               </div>
 
-              <p className="text-[11px] text-charcoal-500">
-                மைக்ரோஃபோன் அனுமதி நீங்கள் 'Start Recording' கிளிக் செய்யும்போது மட்டுமே கேட்கப்படும்.
+              <p className="text-[11px] text-charcoal-400">
+                ஒலிப்பதிவு தொடங்கும் போது மட்டுமே ஒலிவாங்கி அனுமதி கோரப்படும்.
               </p>
             </div>
           ) : (
@@ -299,12 +302,12 @@ export default function AudioRecorder({ audioData, onAudioRecorded, onAudioDisca
                   {recorderState === 'recording' ? (
                     <>
                       <span className="h-2.5 w-2.5 rounded-full bg-rose-600 animate-ping" />
-                      <span className="text-maroon-900">பதிவாகிறது (Recording Live)</span>
+                      <span className="text-maroon-900">நேரலையில் பதிவாகிறது</span>
                     </>
                   ) : (
                     <>
                       <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
-                      <span className="text-amber-800">இடைநிறுத்தப்பட்டுள்ளது (Paused)</span>
+                      <span className="text-amber-800">இடைநிறுத்தப்பட்டுள்ளது</span>
                     </>
                   )}
                 </div>
@@ -340,41 +343,41 @@ export default function AudioRecorder({ audioData, onAudioRecorded, onAudioDisca
                     type="button"
                     onClick={pauseRecording}
                     className="inline-flex items-center gap-1.5 rounded-xl border border-ivory-300 bg-white px-4 py-2 text-xs font-semibold text-charcoal-800 hover:bg-ivory-100 transition-colors shadow-xs"
-                    title="Pause recording"
+                    title="இடைநிறுத்து"
                   >
                     <Pause className="h-4 w-4 text-amber-600" />
-                    <span>இடைநிறுத்து (Pause)</span>
+                    <span>இடைநிறுத்து</span>
                   </button>
                 ) : (
                   <button
                     type="button"
                     onClick={resumeRecording}
                     className="inline-flex items-center gap-1.5 rounded-xl border border-ivory-300 bg-white px-4 py-2 text-xs font-semibold text-charcoal-800 hover:bg-ivory-100 transition-colors shadow-xs"
-                    title="Resume recording"
+                    title="தொடர்க"
                   >
                     <Play className="h-4 w-4 text-emerald-600" />
-                    <span>தொடர்க (Resume)</span>
+                    <span>தொடர்க</span>
                   </button>
                 )}
 
                 <button
                   type="button"
                   onClick={stopRecording}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-maroon-800 px-5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-maroon-900 transition-colors"
-                  title="Stop and complete recording"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-forest-800 px-5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-forest-900 transition-colors"
+                  title="நிறுத்து & முன்னோட்டம்"
                 >
                   <Square className="h-3.5 w-3.5 fill-white text-white" />
-                  <span>நிறுத்து (Stop & Preview)</span>
+                  <span>நிறுத்து & முன்னோட்டம்</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={discardRecording}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition-colors"
-                  title="Cancel and discard"
+                  title="ரத்து செய்க"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
-                  <span>ரத்து (Discard)</span>
+                  <span>ரத்து செய்</span>
                 </button>
               </div>
             </div>
@@ -385,7 +388,7 @@ export default function AudioRecorder({ audioData, onAudioRecorded, onAudioDisca
         <div className="rounded-2xl border border-ivory-300 bg-white p-5 shadow-xs space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-ivory-200">
             <div className="flex items-start gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-maroon-50 text-maroon-800 border border-maroon-200">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-forest-50 text-forest-800 border border-forest-200">
                 <Mic className="h-6 w-6" />
               </div>
               <div>
@@ -393,8 +396,8 @@ export default function AudioRecorder({ audioData, onAudioRecorded, onAudioDisca
                   <h4 className="font-bold text-charcoal-900 text-sm truncate max-w-[280px] sm:max-w-[400px]">
                     {activeRecording.name}
                   </h4>
-                  <span className="rounded bg-maroon-100 text-maroon-800 px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase">
-                    Recorded Audio
+                  <span className="rounded bg-forest-100 text-forest-800 px-2 py-0.5 text-[10px] font-bold tracking-wide">
+                    பதிவு செய்யப்பட்ட ஒலி
                   </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-3 text-xs text-charcoal-500 mt-1">
@@ -405,7 +408,7 @@ export default function AudioRecorder({ audioData, onAudioRecorded, onAudioDisca
                   <span>•</span>
                   <span className="font-mono">{activeRecording.sizeFormatted}</span>
                   <span>•</span>
-                  <span className="text-maroon-800 font-medium">Browser MediaRecorder</span>
+                  <span className="text-forest-800 font-medium font-tamil">நேரடிப் பதிவு</span>
                 </div>
               </div>
             </div>
@@ -416,20 +419,20 @@ export default function AudioRecorder({ audioData, onAudioRecorded, onAudioDisca
                 type="button"
                 onClick={discardRecording}
                 className="inline-flex items-center gap-1 rounded-lg border border-ivory-300 bg-ivory-100 px-3 py-1.5 text-xs font-medium text-charcoal-700 hover:bg-ivory-200 hover:text-charcoal-900 transition-colors"
-                title="Discard and record again"
+                title="மீண்டும் பதிவு செய்"
               >
                 <RotateCcw className="h-3 w-3" />
-                <span>மீண்டும் பதிவு செய் (Re-record)</span>
+                <span>மீண்டும் பதிவு செய்</span>
               </button>
 
               <button
                 type="button"
                 onClick={discardRecording}
                 className="inline-flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-100 transition-colors"
-                title="Remove recording"
+                title="நீக்குக"
               >
                 <Trash2 className="h-3 w-3" />
-                <span>நீக்குக (Discard)</span>
+                <span>நீக்குக</span>
               </button>
             </div>
           </div>
@@ -446,11 +449,11 @@ export default function AudioRecorder({ audioData, onAudioRecorded, onAudioDisca
                 <CheckCircle2 className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
-                <span className="font-bold text-xs sm:text-sm text-emerald-950 block">
-                  Audio ready for transcription
+                <span className="font-bold text-xs sm:text-sm text-emerald-950 block font-tamil">
+                  ஒலிப்பதிவு உரைமாற்றத்திற்குத் தயார்
                 </span>
                 <span className="text-[11px] text-emerald-800 font-sans">
-                  ஒலிப்பதிவு உரைமாற்றத்திற்குத் தயார் • MediaRecorder ({activeRecording.durationFormatted})
+                  கால அளவு: {activeRecording.durationFormatted} • {activeRecording.sizeFormatted}
                 </span>
               </div>
             </div>
@@ -459,9 +462,9 @@ export default function AudioRecorder({ audioData, onAudioRecorded, onAudioDisca
               <button
                 type="button"
                 onClick={onTranscribeClick}
-                className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-maroon-800 px-3.5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-maroon-900 transition-colors shrink-0"
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-forest-800 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-forest-900 transition-colors shrink-0"
               >
-                <span>Continue to Transcript Review</span>
+                <span>உரை ஆய்வுக்குத் தொடர்க</span>
               </button>
             )}
           </div>

@@ -161,9 +161,9 @@ export default function AudioPlayer({ src, title = 'Audio Preview', onEnded }) {
           onTouchEnd={handleSeekEnd}
           disabled={!duration}
           aria-label="Audio scrubber"
-          className="w-full h-2 bg-ivory-300 rounded-lg appearance-none cursor-pointer accent-maroon-800 focus:outline-none disabled:opacity-50"
+          className="w-full h-2 bg-ivory-300 rounded-lg appearance-none cursor-pointer accent-forest-800 focus:outline-none disabled:opacity-50"
           style={{
-            background: `linear-gradient(to right, #7E1F2D 0%, #7E1F2D ${progressPercent}%, #E8E2D5 ${progressPercent}%, #E8E2D5 100%)`,
+            background: `linear-gradient(to right, #18533B 0%, #18533B ${progressPercent}%, #EBE4D8 ${progressPercent}%, #EBE4D8 100%)`,
           }}
         />
       </div>
@@ -176,8 +176,8 @@ export default function AudioPlayer({ src, title = 'Audio Preview', onEnded }) {
             type="button"
             onClick={togglePlay}
             disabled={!src}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-maroon-800 text-white hover:bg-maroon-900 transition-colors shadow-xs disabled:opacity-50"
-            aria-label={isPlaying ? 'Pause' : 'Play'}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-forest-800 text-white hover:bg-forest-900 transition-colors shadow-xs disabled:opacity-50"
+            aria-label={isPlaying ? 'இடைநிறுத்து' : 'இயக்குக'}
           >
             {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
           </button>
@@ -188,7 +188,7 @@ export default function AudioPlayer({ src, title = 'Audio Preview', onEnded }) {
             onClick={handleRestart}
             disabled={!src}
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-ivory-300 bg-white text-charcoal-600 hover:bg-ivory-100 hover:text-charcoal-900 transition-colors disabled:opacity-50"
-            title="மீண்டும் தொடங்கு (Restart from beginning)"
+            title="மீண்டும் தொடங்கு"
           >
             <RotateCcw className="h-3.5 w-3.5" />
           </button>
@@ -198,7 +198,7 @@ export default function AudioPlayer({ src, title = 'Audio Preview', onEnded }) {
             type="button"
             onClick={toggleMute}
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-ivory-300 bg-white text-charcoal-600 hover:bg-ivory-100 hover:text-charcoal-900 transition-colors"
-            title={isMuted ? 'Unmute' : 'Mute'}
+            title={isMuted ? 'ஒலியை இயக்கு' : 'ஒலியை முடக்கு'}
           >
             {isMuted ? <VolumeX className="h-3.5 w-3.5 text-rose-600" /> : <Volume2 className="h-3.5 w-3.5" />}
           </button>
@@ -209,7 +209,7 @@ export default function AudioPlayer({ src, title = 'Audio Preview', onEnded }) {
           type="button"
           onClick={cyclePlaybackRate}
           className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-ivory-300 bg-white text-xs font-mono font-medium text-charcoal-700 hover:bg-ivory-100 transition-colors"
-          title="வேகம் (Playback Speed)"
+          title="இயக்க வேகம்"
         >
           <Gauge className="h-3 w-3 text-gold-600" />
           <span>{playbackRate}x</span>

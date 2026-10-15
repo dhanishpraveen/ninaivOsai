@@ -4,19 +4,37 @@
 
 @layer base {
   :root {
-    --bg-warm-ivory: #FAF8F5;
-    --text-primary: #171717;
+    --bg-warm-ivory: #F8F5EF;
+    --text-charcoal: #141A17;
+    --sidebar-bg: #073D2B;
+    --sidebar-active: #0F523B;
+    --sidebar-border: #135C43;
+    --sidebar-text: #F8F5EF;
+    --sidebar-muted: #9EC4B3;
   }
 
   body {
-    background-color: #FAF8F5;
-    color: #1F2421;
+    background-color: #F8F5EF;
+    color: #141A17;
     font-family: 'Inter', 'Noto Sans Tamil', system-ui, -apple-system, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
     letter-spacing: -0.015em;
   }
+}
+
+/* Explicit sidebar styling classes */
+.sidebar-forest-bg {
+  background-color: #073D2B !important;
+}
+
+.sidebar-nav-active {
+  background-color: #0F523B !important;
+}
+
+.sidebar-nav-hover:hover {
+  background-color: #0B4633 !important;
 }
 
 /* Custom scrollbars */

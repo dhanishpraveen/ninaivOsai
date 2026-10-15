@@ -15,7 +15,7 @@ backend/.env
 venv/
 .venv/
 env/
-
+backend/.env
 # IDE & OS
 .DS_Store
 Thumbs.db

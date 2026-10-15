@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "text": "வணக்கம் தஞ்சாவூர் நெல் சாகுபடி பற்றிய வாய்மொழி வரலாறு",
+  "duration_seconds": 5.33,
+  "inference_time_seconds": 22.05,
+  "language": "ta",
+  "model": "vasista22/whisper-tamil-small",
+  "device": "cpu"
+}

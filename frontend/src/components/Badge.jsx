@@ -4,7 +4,8 @@ export default function Badge({ children, variant = 'default', className = '' })
   const styles = {
     default: 'bg-ivory-200 text-charcoal-700 border-ivory-300',
     demo: 'bg-amber-50 text-amber-900 border-amber-300 font-medium tracking-wide uppercase text-[10px] px-2 py-0.5',
-    maroon: 'bg-maroon-50 text-maroon-700 border-maroon-200',
+    forest: 'bg-forest-50 text-forest-800 border-forest-200',
+    maroon: 'bg-forest-50 text-forest-800 border-forest-200',
     gold: 'bg-gold-50 text-gold-700 border-gold-300',
     phase: 'bg-emerald-50 text-emerald-800 border-emerald-300 text-[11px] font-medium',
   };

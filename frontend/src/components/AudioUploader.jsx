@@ -34,13 +34,13 @@ export default function AudioUploader({ audioData, onAudioSelected, onAudioRemov
     if (file.size > MAX_SIZE_BYTES) {
       const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1);
       setValidationError(
-        `கோப்பின் அளவு அனுமதிக்கப்பட்ட அளவை விட அதிகம் (${fileSizeMB} MB). அதிகபட்ச வரம்பு ${MAX_SIZE_MB} MB மட்டுமே. (File size exceeds 25 MB limit).`
+        `கோப்பின் அளவு அனுமதிக்கப்பட்ட அளவை விட அதிகம் (${fileSizeMB} MB). அதிகபட்ச வரம்பு ${MAX_SIZE_MB} MB மட்டுமே.`
       );
       return;
     }
 
     if (file.size === 0) {
-      setValidationError('தேர்ந்தெடுக்கப்பட்ட கோப்பு காலியாக உள்ளது (Selected file is 0 bytes).');
+      setValidationError('தேர்ந்தெடுக்கப்பட்ட கோப்பு காலியாக உள்ளது.');
       return;
     }
 
@@ -51,7 +51,7 @@ export default function AudioUploader({ audioData, onAudioSelected, onAudioRemov
 
     if (!isMimeAudio && !isExtensionSupported) {
       setValidationError(
-        `ஏற்றுக்கொள்ளப்படாத கோப்பு வடிவம் (.${extension || 'unknown'}). தயவுசெய்து MP3, WAV, M4A, OGG, WebM, அல்லது FLAC கோப்புகளைப் பயன்படுத்தவும். (Unsupported audio format).`
+        `ஏற்றுக்கொள்ளப்படாத கோப்பு வடிவம் (.${extension || 'unknown'}). தயவுசெய்து MP3, WAV, M4A, OGG, WebM அல்லது FLAC கோப்புகளைப் பயன்படுத்தவும்.`
       );
       return;
     }
@@ -94,7 +94,7 @@ export default function AudioUploader({ audioData, onAudioSelected, onAudioRemov
       URL.revokeObjectURL(objectUrl);
       setIsValidating(false);
       setValidationError(
-        'இக்கோப்பினை ஒலியாக இயக்க இயலவில்லை. கோப்பு சேதமடைந்திருக்கலாம் அல்லது பிரவுசரால் ஆதரிக்கப்படாத குறியீட்டு முறையில் (codec) இருக்கலாம். (Unable to decode audio).'
+        'இக்கோப்பினை ஒலியாக இயக்க இயலவில்லை. கோப்பு சேதமடைந்திருக்கலாம் அல்லது உலாவியால் ஆதரிக்கப்படாத குறியீட்டு முறையில் இருக்கலாம்.'
       );
     };
 
@@ -163,7 +163,7 @@ export default function AudioUploader({ audioData, onAudioSelected, onAudioRemov
         <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-800 flex items-start gap-2.5">
           <AlertCircle className="h-4 w-4 shrink-0 text-rose-600 mt-0.5" />
           <div className="leading-relaxed">
-            <span className="font-semibold block mb-0.5">சரிபார்ப்புப் பிழை (Validation Error):</span>
+            <span className="font-semibold block mb-0.5">சரிபார்ப்புப் பிழை:</span>
             {validationError}
           </div>
         </div>
@@ -173,7 +173,7 @@ export default function AudioUploader({ audioData, onAudioSelected, onAudioRemov
       {isValidating && (
         <div className="rounded-xl border border-ivory-300 bg-ivory-50 p-4 text-center text-xs text-charcoal-700 flex items-center justify-center gap-2">
           <RefreshCw className="h-4 w-4 animate-spin text-maroon-700" />
-          <span>ஒலிப்பதிவுக் கோப்பு சரிபார்க்கப்படுகிறது... (Verifying audio format and metadata...)</span>
+          <span>ஒலிப்பதிவுக் கோப்பு சரிபார்க்கப்படுகிறது...</span>
         </div>
       )}
 
@@ -187,7 +187,7 @@ export default function AudioUploader({ audioData, onAudioSelected, onAudioRemov
           className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-200 ${
             isDragging
               ? 'border-maroon-600 bg-maroon-50/60 scale-[1.005]'
-              : 'border-ivory-300 bg-ivory-50/50 hover:bg-ivory-50 hover:border-maroon-300'
+              : 'border-ivory-300 bg-ivory-50/50 hover:bg-ivory-50 hover:border-forest-400'
           }`}
           role="button"
           tabIndex={0}
@@ -197,28 +197,28 @@ export default function AudioUploader({ audioData, onAudioSelected, onAudioRemov
               triggerFileInput();
             }
           }}
-          aria-label="Upload audio file"
+          aria-label="ஒலிப்பதிவுக் கோப்பைப் பதிவேற்றவும்"
         >
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-maroon-50 text-maroon-800 mx-auto mb-3 border border-maroon-100 shadow-xs">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-forest-50 text-forest-800 mx-auto mb-3 border border-forest-100 shadow-xs">
             <UploadCloud className="h-7 w-7" />
           </div>
 
           <h3 className="text-sm sm:text-base font-bold text-charcoal-900 mb-1">
-            தமிழ் ஒலிப்பதிவுக் கோப்பை இங்கே பதிவேற்றவும் (Upload Tamil Audio)
+            தமிழ் ஒலிப்பதிவுக் கோப்பை இங்கே பதிவேற்றவும்
           </h3>
           <p className="text-xs text-charcoal-600 mb-3 font-sans">
-            கோப்பை இழுத்துவிடவும் (Drag & drop) அல்லது கணினியிலிருந்து தேர்ந்தெடுக்க கிளிக் செய்யவும்.
+            கோப்பை இழுத்துவிடவும் அல்லது கணினியிலிருந்து தேர்ந்தெடுக்க கிளிக் செய்யவும்.
           </p>
 
-          <div className="inline-flex items-center gap-2 rounded-lg bg-maroon-800 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-maroon-900 transition-colors pointer-events-none">
-            <FileAudio className="h-4 w-4 text-gold-300" />
-            <span>கோப்பைத் தேர்ந்தெடுக்க (Browse Files)</span>
+          <div className="inline-flex items-center gap-2 rounded-xl bg-forest-800 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-forest-900 transition-colors pointer-events-none">
+            <FileAudio className="h-4 w-4 text-emerald-300" />
+            <span>கோப்பைத் தேர்ந்தெடுக்கவும்</span>
           </div>
 
           <div className="mt-4 pt-4 border-t border-ivory-200 flex flex-wrap items-center justify-center gap-3 text-[11px] text-charcoal-500">
             <span>ஆதரிக்கப்படும் வடிவங்கள்: MP3, WAV, M4A, OGG, WebM, FLAC</span>
             <span>•</span>
-            <span className="font-semibold text-maroon-800">அதிகபட்ச அளவு: 25 MB</span>
+            <span className="font-semibold text-forest-800">அதிகபட்ச அளவு: 25 MB</span>
           </div>
         </div>
       ) : (
@@ -235,8 +235,8 @@ export default function AudioUploader({ audioData, onAudioSelected, onAudioRemov
                   <h4 className="font-bold text-charcoal-900 text-sm truncate max-w-[280px] sm:max-w-[400px]">
                     {audioData.name}
                   </h4>
-                  <span className="rounded bg-emerald-100 text-emerald-800 px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase">
-                    Validated
+                  <span className="rounded bg-emerald-100 text-emerald-800 px-2 py-0.5 text-[10px] font-bold tracking-wide">
+                    சரிபார்க்கப்பட்டது
                   </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-3 text-xs text-charcoal-500 mt-1">
@@ -264,20 +264,20 @@ export default function AudioUploader({ audioData, onAudioSelected, onAudioRemov
                 type="button"
                 onClick={triggerFileInput}
                 className="inline-flex items-center gap-1 rounded-lg border border-ivory-300 bg-ivory-100 px-3 py-1.5 text-xs font-medium text-charcoal-700 hover:bg-ivory-200 hover:text-charcoal-900 transition-colors"
-                title="Replace audio file"
+                title="கோப்பை மாற்றுக"
               >
                 <RefreshCw className="h-3 w-3" />
-                <span>மாற்றுக (Replace)</span>
+                <span>மாற்றுக</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleRemove}
                 className="inline-flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-100 transition-colors"
-                title="Remove audio file"
+                title="கோப்பை நீக்குக"
               >
                 <Trash2 className="h-3 w-3" />
-                <span>நீக்குக (Remove)</span>
+                <span>நீக்குக</span>
               </button>
             </div>
           </div>
@@ -294,11 +294,11 @@ export default function AudioUploader({ audioData, onAudioSelected, onAudioRemov
                 <CheckCircle2 className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
-                <span className="font-bold text-xs sm:text-sm text-emerald-950 block">
-                  Audio ready for transcription
+                <span className="font-bold text-xs sm:text-sm text-emerald-950 block font-tamil">
+                  ஒலிப்பதிவு உரைமாற்றத்திற்குத் தயார்
                 </span>
                 <span className="text-[11px] text-emerald-800 font-sans">
-                  ஒலிப்பதிவு உரைமாற்றத்திற்குத் தயார் • {audioData.extension} ({audioData.sizeFormatted})
+                  கோப்பு வடிவம்: {audioData.extension} • {audioData.sizeFormatted}
                 </span>
               </div>
             </div>
@@ -307,9 +307,9 @@ export default function AudioUploader({ audioData, onAudioSelected, onAudioRemov
               <button
                 type="button"
                 onClick={onTranscribeClick}
-                className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-maroon-800 px-3.5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-maroon-900 transition-colors shrink-0"
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-forest-800 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-forest-900 transition-colors shrink-0"
               >
-                <span>Continue to Transcript Review</span>
+                <span>உரை ஆய்வுக்குத் தொடர்க</span>
               </button>
             )}
           </div>
