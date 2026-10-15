@@ -19,6 +19,7 @@ from services.supabase_service import (
     SupabaseService,
     SupabaseNotConfiguredError,
     AudioUploadError,
+    ImageUploadError,
     DatabaseInsertError,
 )
 
@@ -241,14 +242,16 @@ async def publish_story_endpoint(
     recording_date: Optional[str] = Form(None, description="Recording date (YYYY-MM-DD)"),
     audio_duration_seconds: Optional[float] = Form(None, description="Duration of audio in seconds"),
     is_demo: bool = Form(False, description="Flag for demonstration oral histories"),
+    image_file: Optional[UploadFile] = File(None, description="Optional contributor story image (JPEG, PNG, WebP)"),
 ):
     """
     Publish Story Endpoint:
     1. Validates required fields (title, contributor, location, category, transcript, consent)
     2. Validates audio file presence and size
-    3. Uploads original audio to Supabase Storage bucket ('oral-history-audio')
-    4. Persists story metadata to Supabase 'public.interviews' table
-    5. Cleans up orphaned audio in storage if database insert fails
+    3. Handles optional contributor image upload with validation
+    4. Uploads audio & image to Supabase Storage bucket ('oral-history-audio')
+    5. Persists story metadata to Supabase 'public.interviews' table
+    6. Cleans up orphaned storage objects if database insert fails
     """
     # 1. Field validations
     if not consent_confirmed:
@@ -314,6 +317,35 @@ async def publish_story_endpoint(
             detail=f"Audio file exceeds maximum allowed size of {MAX_FILE_SIZE_BYTES // (1024 * 1024)} MB.",
         )
 
+    # 3. Optional image reading & validation
+    image_bytes = None
+    image_filename = None
+    if image_file and image_file.filename:
+        try:
+            raw_img = await image_file.read()
+            if len(raw_img) > 0:
+                if len(raw_img) > 5 * 1024 * 1024:
+                    raise HTTPException(
+                        status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                        detail="Image file exceeds maximum allowed size of 5 MB.",
+                    )
+                clean_img_name = image_file.filename.replace(" ", "_")
+                img_ext = os.path.splitext(clean_img_name)[1].lower()
+                if img_ext not in [".jpg", ".jpeg", ".png", ".webp"]:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Unsupported image format '{img_ext}'. Supported formats: JPEG, PNG, WebP.",
+                    )
+                image_bytes = raw_img
+                image_filename = clean_img_name
+        except HTTPException:
+            raise
+        except Exception as img_read_err:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Failed to read image upload stream: {img_read_err}",
+            )
+
     # Parse tags
     parsed_tags: List[str] = []
     if tags:
@@ -325,7 +357,7 @@ async def publish_story_endpoint(
         except Exception:
             parsed_tags = [t.strip() for t in tags.split(",") if t.strip()]
 
-    # 3. Publish via SupabaseService
+    # 4. Publish via SupabaseService
     supabase_service = SupabaseService.get_instance()
     try:
         result = await supabase_service.publish_story(
@@ -346,9 +378,11 @@ async def publish_story_endpoint(
             recording_date=recording_date,
             audio_duration_seconds=audio_duration_seconds,
             is_demo=is_demo,
+            image_bytes=image_bytes,
+            image_filename=image_filename,
         )
 
-        # 4. Trigger safe RAG auto-indexing for the newly published story
+        # 5. Trigger safe RAG auto-indexing for the newly published story
         if result.get("success") and result.get("story_id") and transcript.strip():
             try:
                 from services.rag_service import RAGService
@@ -387,6 +421,11 @@ async def publish_story_endpoint(
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=str(upload_err),
+        )
+    except ImageUploadError as img_err:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(img_err),
         )
     except DatabaseInsertError as db_err:
         raise HTTPException(

@@ -17,39 +17,7 @@ import {
 } from 'lucide-react';
 import Badge from '../components/Badge';
 import { TAMIL_STRINGS } from '../constants/tamilStrings';
-
-const SAMPLE_QUESTIONS = [
-  {
-    id: "q1",
-    question: "தஞ்சாவூர் ஆனிப் பட்டத்து உழவு மற்றும் பாரம்பரிய நெல் சாகுபடி முறை என்ன?",
-    category: "பாரம்பரிய வேளாண்மை",
-    topic: "Agriculture",
-  },
-  {
-    id: "q2",
-    question: "பாரம்பரிய பஞ்சகவ்யா இயற்கை உரம் தயாரிக்கும் முறை என்ன?",
-    category: "இயற்கை உரம்",
-    topic: "Agriculture",
-  },
-  {
-    id: "q3",
-    question: "திருவண்ணாமலை கண்மாய் மடை பராமரிப்பும் நீர் பங்கீட்டு முறையும் எப்படி இருந்தது?",
-    category: "நீர் மேலாண்மை",
-    topic: "Water Conservation",
-  },
-  {
-    id: "q4",
-    question: "காஞ்சிபுரம் தறி நெசவாளர்கள் வேலை செய்யும் போது பாடிய தறிப் பாட்டுகளின் நோக்கம் என்ன?",
-    category: "கைவினை மரபு",
-    topic: "Traditional Crafts",
-  },
-  {
-    id: "q5",
-    question: "செவ்வாய் கிரக ஆராய்ச்சி மற்றும் நாசா விண்கலம் (ஆதாரம் இல்லாத கேள்வி)",
-    category: "ஆதாரமற்ற சோதனை",
-    topic: null,
-  },
-];
+import { DEFAULT_SUGGESTED_QUESTIONS } from '../constants/suggestedQuestions';
 
 const INITIAL_WELCOME_MESSAGE = {
   id: 'welcome-0',
@@ -74,10 +42,12 @@ export default function AskHeritageAIPage() {
   const [activeConversation, setActiveConversation] = useState([INITIAL_WELCOME_MESSAGE]);
   const [agentStatus, setAgentStatus] = useState(null);
   const [lastQuery, setLastQuery] = useState('');
+  const [suggestedQuestions, setSuggestedQuestions] = useState(DEFAULT_SUGGESTED_QUESTIONS);
 
-  // Load backend status on mount
+  // Load backend status and remote suggested questions on mount
   useEffect(() => {
     fetchStatus();
+    fetchSuggestedQuestions();
   }, []);
 
   const fetchStatus = async () => {
@@ -89,6 +59,20 @@ export default function AskHeritageAIPage() {
       }
     } catch (e) {
       console.warn("Could not fetch RAG status:", e);
+    }
+  };
+
+  const fetchSuggestedQuestions = async () => {
+    try {
+      const res = await fetch('http://127.0.0.1:8001/knowledge/suggested-questions');
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data?.questions) && data.questions.length > 0) {
+          setSuggestedQuestions(data.questions);
+        }
+      }
+    } catch (e) {
+      console.warn("Using local suggested questions fallback:", e);
     }
   };
 
@@ -166,6 +150,7 @@ export default function AskHeritageAIPage() {
   };
 
   const handleSelectSuggested = (item) => {
+    if (loading) return; // Prevent duplicate submissions while request is processing
     setInputQuery(item.question);
     if (item.topic) {
       setSelectedTopic(item.topic);
@@ -211,34 +196,6 @@ export default function AskHeritageAIPage() {
 
       {/* Main Container */}
       <div className="rounded-3xl border border-ivory-300 bg-white shadow-xs overflow-hidden flex flex-col min-h-[660px]">
-        {/* Suggested Quick Question Pills at top */}
-        <div className="p-4 bg-ivory-50/70 border-b border-ivory-200 font-tamil">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-charcoal-600">
-              <HelpCircle className="h-3.5 w-3.5 text-forest-700" />
-              <span>{TAMIL_STRINGS.aiAgent.sampleQuestionsTitle}</span>
-            </div>
-            <span className="text-[10px] text-charcoal-500 hidden sm:inline">
-              கிளிக் செய்து உடனே விடைபெறவும்
-            </span>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {SAMPLE_QUESTIONS.map((q) => (
-              <button
-                key={q.id}
-                type="button"
-                onClick={() => handleSelectSuggested(q)}
-                disabled={loading}
-                className="text-left px-3 py-1.5 rounded-xl border border-ivory-300 bg-white text-xs text-charcoal-700 hover:border-forest-500 hover:bg-forest-50/40 transition-all disabled:opacity-50 cursor-pointer"
-              >
-                <span className="font-bold text-forest-800 mr-1.5">{q.category}:</span>
-                <span className="truncate max-w-[260px] inline-block align-bottom">{q.question}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Chat / Q&A Thread Body */}
         <div className="flex-1 p-5 sm:p-6 space-y-6 overflow-y-auto bg-ivory-50/20 font-tamil">
           {activeConversation.map((msg) => (
@@ -425,6 +382,49 @@ export default function AskHeritageAIPage() {
               )}
             </div>
           )}
+        </div>
+
+        {/* TASK 1: Suggested Questions Section above Chat Input */}
+        <div className="border-t border-ivory-200 bg-ivory-50/80 p-4 font-tamil">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-3">
+            <div className="flex items-center gap-2">
+              <HelpCircle className="h-4 w-4 text-forest-700" />
+              <h3 className="text-xs sm:text-sm font-bold text-charcoal-900">
+                என்ன தெரிந்துகொள்ள விரும்புகிறீர்கள்?
+              </h3>
+            </div>
+            <span className="text-[11px] text-charcoal-500">
+              வாய்மொழி வரலாற்றுக் களஞ்சியத்திலிருந்து தேர்ந்தெடுக்கப்பட்ட கேள்விகள்
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            {suggestedQuestions.map((q) => (
+              <button
+                key={q.id}
+                type="button"
+                disabled={loading}
+                onClick={() => handleSelectSuggested(q)}
+                className="group text-left p-3 rounded-2xl border border-ivory-300 bg-white hover:border-forest-500 hover:bg-forest-50/40 shadow-2xs hover:shadow-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed flex flex-col justify-between gap-2 cursor-pointer"
+                title={`${q.category} - ${q.speaker || ''}`}
+              >
+                <span className="text-xs font-semibold text-charcoal-900 group-hover:text-forest-900 line-clamp-2 leading-relaxed">
+                  {q.question}
+                </span>
+                <div className="flex items-center justify-between text-[10px] text-charcoal-500 pt-1.5 border-t border-ivory-100">
+                  <span className="font-bold text-forest-800 bg-forest-50 px-2 py-0.5 rounded-md border border-forest-100">
+                    {q.category}
+                  </span>
+                  {q.district && (
+                    <span className="flex items-center gap-1 text-charcoal-500 font-medium">
+                      <MapPin className="h-3 w-3 text-forest-700" />
+                      <span>{q.district}</span>
+                    </span>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Input Bar */}

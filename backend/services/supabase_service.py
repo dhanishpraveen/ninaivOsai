@@ -16,6 +16,7 @@ if _backend_env.exists():
 else:
     load_dotenv(override=False)
 
+import re
 from demo_data import DEMO_STORIES
 
 # Deterministic UUID mapping for demo stories
@@ -23,6 +24,23 @@ DEMO_SLUG_TO_UUID = {
     d["id"]: str(uuid.uuid5(uuid.NAMESPACE_DNS, d["id"])) for d in DEMO_STORIES
 }
 DEMO_UUID_TO_SLUG = {v: k for k, v in DEMO_SLUG_TO_UUID.items()}
+
+# Curated, distinct, culturally authentic image assets for each demonstration story
+DEMO_IMAGE_MAP = {
+    "demo-story-01": "/farmer_ramasamy.jpg",
+    "demo-story-02": "/farmer_muthulakshmi.jpg",
+    "demo-story-03": "/water_sluice_irrigation.jpg",
+    "demo-story-04": "/kongu_handloom_weaving.jpg",
+    "demo-story-05": "/heritage_seed_preservation.jpg",
+    "demo-story-06": "/tirunelveli_villupaattu.svg",
+    "demo-story-07": "/kolli_herbal_medicine.svg",
+    "demo-story-08": "/chettinad_terracotta_craft.svg",
+    "demo-story-09": "/pongal_festival_ritual.svg",
+    "demo-story-10": "/traditional_fermented_food.svg",
+}
+for _slug, _img in list(DEMO_IMAGE_MAP.items()):
+    if _slug in DEMO_SLUG_TO_UUID:
+        DEMO_IMAGE_MAP[DEMO_SLUG_TO_UUID[_slug]] = _img
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +50,10 @@ class SupabaseNotConfiguredError(Exception):
 
 class AudioUploadError(Exception):
     """Raised when audio upload to Supabase Storage fails."""
+    pass
+
+class ImageUploadError(Exception):
+    """Raised when image upload to Supabase Storage fails."""
     pass
 
 class DatabaseInsertError(Exception):
@@ -241,11 +263,33 @@ class SupabaseService:
             story_id = DEMO_UUID_TO_SLUG[str(story_id)]
             is_demo_val = True
 
+        desc = row.get("short_description") or ""
+        image_url = None
+        is_contributor_image = False
+
+        # Extract contributor image annotation if present: <!-- IMAGE: ... -->
+        image_match = re.search(r"<!--\s*IMAGE:\s*(.*?)\s*-->", desc)
+        if image_match:
+            img_rel = image_match.group(1).strip()
+            if img_rel.startswith("http://") or img_rel.startswith("https://") or img_rel.startswith("/"):
+                image_url = img_rel
+            elif self._client and img_rel:
+                try:
+                    image_url = self._client.storage.from_(self.storage_bucket).get_public_url(img_rel)
+                except Exception:
+                    image_url = f"{self.supabase_url}/storage/v1/object/public/{self.storage_bucket}/{img_rel}"
+            is_contributor_image = True
+            # Strip image tag so UI text remains clean
+            desc = re.sub(r"<!--\s*IMAGE:\s*.*?\s*-->", "", desc).strip()
+        elif is_demo_val or str(story_id) in DEMO_IMAGE_MAP or str(row.get("id")) in DEMO_IMAGE_MAP:
+            image_url = DEMO_IMAGE_MAP.get(str(story_id)) or DEMO_IMAGE_MAP.get(str(row.get("id")))
+            is_contributor_image = False
+
         return {
             "id": story_id,
             "title": row.get("story_title") or "தலைப்பற்ற வாய்மொழி வரலாறு",
-            "description": row.get("short_description") or "",
-            "summary": row.get("short_description") or "",
+            "description": desc,
+            "summary": desc,
             "contributor_name": row.get("speaker_name") or "வாய்மொழி உரையாளர் (Storyteller)",
             "uploader_name": row.get("interviewer_name"),
             "village_or_town": village or district or "Tamil Nadu",
@@ -263,6 +307,9 @@ class SupabaseService:
             "audio_url": audio_url,
             "audio_duration_seconds": None,
             "audio_size_bytes": row.get("audio_size_bytes"),
+            "image": image_url,
+            "image_url": image_url,
+            "is_contributor_image": is_contributor_image,
             "consent_confirmed": bool(row.get("consent_confirmed", True)),
             "publication_status": "published",
             "is_demo": is_demo_val,
@@ -343,13 +390,16 @@ class SupabaseService:
         recording_date: Optional[str] = None,
         audio_duration_seconds: Optional[float] = None,
         is_demo: bool = False,
+        image_bytes: Optional[bytes] = None,
+        image_filename: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Publishes a story:
         1. Validates inputs & consent
         2. Uploads audio to Supabase Storage bucket
-        3. Inserts story record into active table (public.stories or public.interviews)
-        4. If DB insert fails, cleans up the uploaded storage object
+        3. Uploads optional contributor image to Supabase Storage bucket (story-images/)
+        4. Inserts story record into public.interviews
+        5. If DB insert fails, cleans up both uploaded audio and image files
         """
         if not self.is_configured():
             status_info = self.get_status()
@@ -434,14 +484,80 @@ class SupabaseService:
         except Exception:
             public_audio_url = f"{self.supabase_url}/storage/v1/object/public/{self.storage_bucket}/{storage_path}"
 
-        # Step 2: Prepare database record
+        # Step 2: Handle optional contributor image upload
+        image_uploaded = False
+        image_storage_path = None
+        public_image_url = None
+
+        if image_bytes and len(image_bytes) > 0:
+            if len(image_bytes) > 5 * 1024 * 1024:
+                if audio_uploaded:
+                    try:
+                        self._client.storage.from_(self.storage_bucket).remove([storage_path])
+                    except Exception:
+                        pass
+                raise ImageUploadError("Image file exceeds maximum allowed size of 5 MB.")
+
+            clean_img_name = (image_filename or "story_image.jpg").replace(" ", "_")
+            img_ext = os.path.splitext(clean_img_name)[1].lower()
+            img_mime_map = {
+                ".jpg": "image/jpeg",
+                ".jpeg": "image/jpeg",
+                ".png": "image/png",
+                ".webp": "image/webp",
+            }
+            if img_ext not in img_mime_map:
+                if audio_uploaded:
+                    try:
+                        self._client.storage.from_(self.storage_bucket).remove([storage_path])
+                    except Exception:
+                        pass
+                raise ImageUploadError(
+                    f"Unsupported image format '{img_ext}'. Supported formats: JPEG, PNG, WebP."
+                )
+
+            img_content_type = img_mime_map[img_ext]
+            image_storage_path = f"story-images/{story_id}_{clean_img_name}"
+
+            try:
+                logger.info(
+                    "Uploading story image to Supabase Storage bucket '%s': %s",
+                    self.storage_bucket, image_storage_path
+                )
+                self._client.storage.from_(self.storage_bucket).upload(
+                    path=image_storage_path,
+                    file=image_bytes,
+                    file_options={"content-type": img_content_type, "upsert": "false"},
+                )
+                image_uploaded = True
+                try:
+                    public_image_url = self._client.storage.from_(self.storage_bucket).get_public_url(image_storage_path)
+                except Exception:
+                    public_image_url = f"{self.supabase_url}/storage/v1/object/public/{self.storage_bucket}/{image_storage_path}"
+            except Exception as img_err:
+                logger.error("Failed to upload story image to Supabase Storage: %s", img_err)
+                if audio_uploaded:
+                    try:
+                        self._client.storage.from_(self.storage_bucket).remove([storage_path])
+                    except Exception:
+                        pass
+                raise ImageUploadError(f"Failed to upload story image to Supabase Storage: {img_err}")
+
+        # Step 3: Prepare database record with safe image annotation
         now_iso = datetime.utcnow().isoformat() + "Z"
         rec_date = recording_date if recording_date else date.today().isoformat()
+
+        desc_text = (description or "").strip()
+        if image_storage_path:
+            img_tag = f"<!-- IMAGE: {image_storage_path} -->"
+            final_description = f"{desc_text}\n{img_tag}" if desc_text else img_tag
+        else:
+            final_description = desc_text if desc_text else None
 
         story_record = {
             "id": story_id,
             "title": title.strip(),
-            "description": description.strip() if description else None,
+            "description": final_description,
             "contributor_name": contributor_name.strip(),
             "uploader_name": uploader_name.strip() if uploader_name else None,
             "village_or_town": village_or_town.strip(),
@@ -466,7 +582,7 @@ class SupabaseService:
             "updated_at": now_iso,
         }
 
-        # Step 3: Insert into active Supabase table (public.interviews)
+        # Step 4: Insert into active Supabase table (public.interviews)
         try:
             logger.info("Inserting story metadata into Supabase public.interviews: id=%s", story_id)
             row_data = self._story_to_interview_row(story_record)
@@ -481,19 +597,27 @@ class SupabaseService:
                 "title": title,
                 "audio_storage_path": storage_path,
                 "audio_url": public_audio_url,
+                "image_storage_path": image_storage_path,
+                "image_url": public_image_url,
                 "status": "published",
                 "message": "Story published and preserved in Supabase public.interviews successfully.",
                 "story": story_record,
             }
 
         except Exception as db_err:
-            logger.error("Failed to insert story into Supabase: %s. Cleaning up orphaned audio...", db_err)
+            logger.error("Failed to insert story into Supabase: %s. Cleaning up orphaned storage...", db_err)
             if audio_uploaded:
                 try:
                     self._client.storage.from_(self.storage_bucket).remove([storage_path])
                     logger.info("Cleaned up orphaned audio at %s", storage_path)
                 except Exception as cleanup_err:
-                    logger.warning("Failed to remove orphaned storage object %s: %s", storage_path, cleanup_err)
+                    logger.warning("Failed to remove orphaned audio %s: %s", storage_path, cleanup_err)
+            if image_uploaded and image_storage_path:
+                try:
+                    self._client.storage.from_(self.storage_bucket).remove([image_storage_path])
+                    logger.info("Cleaned up orphaned image at %s", image_storage_path)
+                except Exception as img_cleanup_err:
+                    logger.warning("Failed to remove orphaned image %s: %s", image_storage_path, img_cleanup_err)
 
             raise DatabaseInsertError(f"Database insertion failed: {db_err}")
 

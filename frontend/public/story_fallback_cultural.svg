@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgFallback" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064E3B" />
+      <stop offset="50%" stop-color="#022C22" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#10B981" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#10B981" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="goldGleam" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#D97706" />
+      <stop offset="50%" stop-color="#FCD34D" />
+      <stop offset="100%" stop-color="#B45309" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="720" fill="url(#bgFallback)" />
+  <circle cx="640" cy="350" r="320" fill="url(#centerGlow)" />
+
+  <!-- Geometric Cultural Border / Kolam Accents -->
+  <rect x="40" y="40" width="1200" height="640" rx="24" fill="none" stroke="#10B981" stroke-width="2" stroke-dasharray="16 10" opacity="0.4" />
+  
+  <!-- Center Cultural Emblem -->
+  <g transform="translate(640, 310)">
+    <!-- Outer Sacred Circle with Kolam Dots -->
+    <circle cx="0" cy="0" r="160" fill="#064E3B" stroke="url(#goldGleam)" stroke-width="5" />
+    <circle cx="0" cy="0" r="145" fill="none" stroke="#34D399" stroke-width="2" stroke-dasharray="6 6" opacity="0.6" />
+
+    <!-- Palm-leaf Manuscript / Olaisuvadi Motif (ஓலைச்சுவடி) -->
+    <g transform="translate(0, -20)">
+      <rect x="-90" y="-12" width="180" height="24" rx="4" fill="#FEF3C7" stroke="#D97706" stroke-width="2" />
+      <circle cx="-50" cy="0" r="3" fill="#78350F" />
+      <circle cx="50" cy="0" r="3" fill="#78350F" />
+      <!-- Tamil Inscribed Lines -->
+      <line x1="-30" y1="-4" x2="30" y2="-4" stroke="#B45309" stroke-width="1.5" stroke-dasharray="4 2" />
+      <line x1="-30" y1="4" x2="30" y2="4" stroke="#B45309" stroke-width="1.5" stroke-dasharray="4 2" />
+    </g>
+
+    <!-- Soundwave Waves (நினைவோசை - Voice Waves) -->
+    <g stroke="url(#goldGleam)" stroke-width="5" stroke-linecap="round">
+      <line x1="-70" y1="50" x2="-70" y2="65" />
+      <line x1="-50" y1="40" x2="-50" y2="75" />
+      <line x1="-30" y1="30" x2="-30" y2="85" />
+      <line x1="-10" y1="20" x2="-10" y2="95" />
+      <line x1="10" y1="20" x2="10" y2="95" />
+      <line x1="30" y1="30" x2="30" y2="85" />
+      <line x1="50" y1="40" x2="50" y2="75" />
+      <line x1="70" y1="50" x2="70" y2="65" />
+    </g>
+  </g>
+
+  <!-- Title & Subtitle in Pure Tamil -->
+  <text x="640" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="extrabold" fill="#FDE68A" text-anchor="middle" letter-spacing="1.5">
+    நினைவோசை • வாய்மொழி ஆவணப் பதிவு
+  </text>
+  <text x="640" y="590" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-medium" fill="#A7F3D0" text-anchor="middle" letter-spacing="0.5">
+    தமிழ் பண்பாட்டு அறிவுப் பாதுகாப்புத் திட்டம்
+  </text>
+</svg>

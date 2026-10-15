@@ -73,6 +73,11 @@ export async function publishStory(storyData) {
   formData.append('transcript', storyData.transcript || '');
   formData.append('consent_confirmed', String(Boolean(storyData.consentConfirmed)));
 
+  // Optional contributor image file
+  if (storyData.imageFile) {
+    formData.append('image_file', storyData.imageFile, storyData.imageFilename || storyData.imageFile.name || 'story_image.jpg');
+  }
+
   // Optional fields
   if (storyData.originalTranscript) formData.append('original_transcript', storyData.originalTranscript);
   if (storyData.uploaderName) formData.append('uploader_name', storyData.uploaderName);

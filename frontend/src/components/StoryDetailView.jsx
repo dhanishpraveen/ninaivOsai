@@ -79,6 +79,29 @@ export default function StoryDetailView({ story, onClose }) {
           </button>
         </div>
 
+        {/* Story Thumbnail / Image Banner */}
+        <div className="relative aspect-[16/9] sm:aspect-[21/9] w-full overflow-hidden rounded-2xl bg-ivory-200 border border-ivory-300 shadow-xs">
+          <img
+            src={story.image || '/story_fallback_cultural.svg'}
+            alt={story.title}
+            className="h-full w-full object-cover"
+            onError={(e) => {
+              e.currentTarget.src = '/story_fallback_cultural.svg';
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal-950/70 via-charcoal-950/20 to-transparent pointer-events-none" />
+          <div className="absolute bottom-3 left-3 flex items-center gap-2 font-tamil">
+            {story.isContributorImage && (
+              <span className="rounded-lg bg-emerald-950/90 text-emerald-300 px-2.5 py-1 text-xs font-bold border border-emerald-500/40 shadow-xs">
+                பங்களிப்பாளர் சமர்ப்பித்த படம்
+              </span>
+            )}
+            {story.isDemo && (
+              <Badge variant="demo">மாதிரிப் படம்</Badge>
+            )}
+          </div>
+        </div>
+
         {/* Story Header */}
         <div className="space-y-2.5 font-tamil">
           <div className="flex flex-wrap items-center gap-2">

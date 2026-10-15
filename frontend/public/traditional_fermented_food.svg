@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgFood" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#14532D" />
+      <stop offset="60%" stop-color="#15803D" />
+      <stop offset="100%" stop-color="#052E16" />
+    </linearGradient>
+    <radialGradient id="riceGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FEF9C3" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#FEF9C3" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="clayPot" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9A3412" />
+      <stop offset="50%" stop-color="#7C2D12" />
+      <stop offset="100%" stop-color="#451A03" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="720" fill="url(#bgFood)" />
+  <circle cx="640" cy="380" r="320" fill="url(#riceGlow)" />
+
+  <!-- Fresh Plantain / Banana Leaf Platter (வாழை இலை) -->
+  <g transform="translate(640, 440)">
+    <!-- Banana leaf oval arc -->
+    <path d="M -480 30 C -360 -180 360 -180 480 30 C 360 210 -360 210 -480 30 Z" fill="#16A34A" stroke="#86EFAC" stroke-width="4" />
+    <!-- Leaf Center Midrib (வாழை நரம்பு) -->
+    <line x1="-480" y1="30" x2="480" y2="30" stroke="#4ADE80" stroke-width="5" />
+    <!-- Leaf Parallel Veins -->
+    <path d="M -350 30 L -300 -80 M -200 30 L -150 -100 M -50 30 L 0 -110 M 100 30 L 150 -100 M 250 30 L 300 -80" stroke="#15803D" stroke-width="2.5" />
+    <path d="M -350 30 L -300 130 M -200 30 L -150 150 M -50 30 L 0 160 M 100 30 L 150 150 M 250 30 L 300 130" stroke="#15803D" stroke-width="2.5" />
+  </g>
+
+  <!-- The Earthen Pot with Fermented Rice & Water (பழைய சோற்று மண்பானை) -->
+  <g transform="translate(640, 360)">
+    <!-- Pot body -->
+    <ellipse cx="0" cy="50" rx="220" ry="140" fill="url(#clayPot)" stroke="#FED7AA" stroke-width="4" />
+    <ellipse cx="0" cy="-20" rx="180" ry="50" fill="#291104" stroke="#FDBA74" stroke-width="3" />
+    
+    <!-- Cool water with hand-pounded fermented rice (பழைய சோறும் நீராகாரமும்) -->
+    <ellipse cx="0" cy="-18" rx="160" ry="42" fill="#F8FAFC" opacity="0.95" />
+    <ellipse cx="0" cy="-18" rx="150" ry="38" fill="#F1F5F9" stroke="#E2E8F0" stroke-width="2" />
+    
+    <!-- Floating rice grains and buttermilk foam -->
+    <circle cx="-40" cy="-15" r="5" fill="#FFF" />
+    <circle cx="20" cy="-25" r="4" fill="#FFF" />
+    <circle cx="70" cy="-10" r="5" fill="#FFF" />
+    <circle cx="-90" cy="-20" r="4" fill="#FFF" />
+    <circle cx="-10" cy="-10" r="6" fill="#FFF" />
+    
+    <!-- Small Pink Shallots (சின்ன வெங்காயம்) on Leaf -->
+    <g transform="translate(-160, 40)">
+      <ellipse cx="0" cy="0" rx="26" ry="34" fill="#F43F5E" stroke="#FECDD3" stroke-width="2" />
+      <path d="M -5 -34 Q 0 -48 10 -40" stroke="#15803D" stroke-width="3" fill="none" />
+      <ellipse cx="32" cy="10" rx="22" ry="28" fill="#E11D48" stroke="#FECDD3" stroke-width="2" />
+    </g>
+
+    <!-- Fresh Green Chillies (பச்சை மிளகாய்) -->
+    <g transform="translate(140, 30)">
+      <path d="M 0 0 Q 30 -20 60 10 Q 80 40 100 50 Q 80 50 50 30 Q 20 20 0 0 Z" fill="#22C55E" stroke="#86EFAC" stroke-width="2" />
+      <path d="M 0 0 L -10 -15" stroke="#15803D" stroke-width="4" stroke-linecap="round" />
+    </g>
+  </g>
+
+  <!-- Title Banner Card in Pure Tamil -->
+  <rect x="340" y="630" width="600" height="60" rx="16" fill="#052E16" fill-opacity="0.9" stroke="#86EFAC" stroke-width="2" />
+  <text x="640" y="668" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="bold" fill="#FEF08A" text-anchor="middle" letter-spacing="1">
+    பழைய சோறும் கம்மங்கூழும் • தமிழர் உணவு சத்து (Pollachi)
+  </text>
+</svg>

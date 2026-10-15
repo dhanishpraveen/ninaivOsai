@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgTerra" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#451A03" />
+      <stop offset="50%" stop-color="#78350F" />
+      <stop offset="100%" stop-color="#291104" />
+    </linearGradient>
+    <linearGradient id="clayGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#9A3412" />
+      <stop offset="50%" stop-color="#C2410C" />
+      <stop offset="100%" stop-color="#7C2D12" />
+    </linearGradient>
+    <radialGradient id="wheelGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#F97316" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#F97316" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="720" fill="url(#bgTerra)" />
+  <circle cx="640" cy="420" r="320" fill="url(#wheelGlow)" />
+
+  <!-- Traditional Potter's Wheel Base (குயவர் சக்கரம்) -->
+  <g transform="translate(640, 520)">
+    <ellipse cx="0" cy="0" rx="380" ry="70" fill="#291104" stroke="#D97706" stroke-width="6" />
+    <ellipse cx="0" cy="0" rx="330" ry="58" fill="#431407" stroke="#EA580C" stroke-width="3" stroke-dasharray="16 12" />
+    <circle cx="0" cy="0" r="42" fill="#78350F" stroke="#FDBA74" stroke-width="4" />
+  </g>
+
+  <!-- Ayyanar Terracotta Horse (சுடுமண் குதிரை சிற்பம்) Silhouetted/Sculpted on Left -->
+  <g transform="translate(240, 160)">
+    <!-- Horse Chest & Body -->
+    <path d="M 120 380 C 140 260 220 220 260 260 C 290 290 320 340 330 380 Z" fill="url(#clayGrad)" stroke="#FED7AA" stroke-width="3" />
+    <!-- Horse Neck & Head Raised High -->
+    <path d="M 120 380 C 90 240 100 140 170 80 C 200 50 230 70 210 120 C 230 140 240 180 220 260 Z" fill="url(#clayGrad)" stroke="#FED7AA" stroke-width="3" />
+    <!-- Muzzle / Snout -->
+    <path d="M 170 80 L 130 95 L 140 125 L 180 115 Z" fill="#7C2D12" stroke="#FED7AA" stroke-width="2" />
+    <!-- Pointed Ears & Temple Bell Collar -->
+    <polygon points="175,70 190,40 195,75" fill="#FED7AA" />
+    <polygon points="190,75 205,45 210,80" fill="#FED7AA" />
+    <!-- Decorative Terracotta Garland / Bells -->
+    <circle cx="165" cy="200" r="14" fill="#FED7AA" />
+    <circle cx="178" cy="235" r="14" fill="#FED7AA" />
+    <circle cx="195" cy="270" r="14" fill="#FED7AA" />
+    <circle cx="218" cy="305" r="14" fill="#FED7AA" />
+  </g>
+
+  <!-- Shaped Earthen Clay Pot (மண்பானை) on the Wheel -->
+  <g transform="translate(640, 310)">
+    <!-- Main Pot Body -->
+    <path d="M -90 120 C -150 70 -140 -20 0 -40 C 140 -20 150 70 90 120 C 60 145 -60 145 -90 120 Z" fill="url(#clayGrad)" stroke="#FFEDD5" stroke-width="4" />
+    <!-- Pot Neck and Rim -->
+    <path d="M -45 -40 C -45 -65 45 -65 45 -40 Z" fill="#9A3412" stroke="#FED7AA" stroke-width="3" />
+    <ellipse cx="0" cy="-62" rx="55" ry="16" fill="#C2410C" stroke="#FED7AA" stroke-width="3" />
+    <!-- Wet Clay Glaze Sheen -->
+    <path d="M -70 40 Q -50 -10 0 -20 Q -40 20 -50 70 Z" fill="#FED7AA" opacity="0.4" />
+    <!-- Traditional White Kolam Lines on Pot -->
+    <path d="M -110 50 Q 0 85 110 50" stroke="#FFF" stroke-width="3" stroke-dasharray="8 6" fill="none" opacity="0.8" />
+  </g>
+
+  <!-- Chettinad Athangudi Tile Motif Decor on Right -->
+  <g transform="translate(980, 240)">
+    <rect x="-60" y="-60" width="120" height="120" rx="16" fill="#7C2D12" stroke="#FED7AA" stroke-width="4" transform="rotate(45)" />
+    <circle cx="0" cy="0" r="32" fill="#EA580C" stroke="#FED7AA" stroke-width="3" />
+    <circle cx="0" cy="0" r="14" fill="#FED7AA" />
+  </g>
+
+  <!-- Title Banner Card in Pure Tamil -->
+  <rect x="340" y="630" width="600" height="60" rx="16" fill="#291104" fill-opacity="0.9" stroke="#EA580C" stroke-width="2" />
+  <text x="640" y="668" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="bold" fill="#FED7AA" text-anchor="middle" letter-spacing="1">
+    செட்டிநாட்டு மண்பாண்டம் • சுடுமண் சிற்பக் கலை (Sivagangai)
+  </text>
+</svg>

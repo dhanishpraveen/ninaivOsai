@@ -39,11 +39,11 @@ export default function ArchiveStoryCard({ story, onSelect }) {
         {/* Top Thumbnail Container */}
         <div className="relative aspect-[16/9] w-full overflow-hidden bg-ivory-200">
           <img
-            src={story.image || '/farmer_ramasamy.jpg'}
+            src={story.image || '/story_fallback_cultural.svg'}
             alt={story.title}
             className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
             onError={(e) => {
-              e.currentTarget.src = '/farmer_ramasamy.jpg';
+              e.currentTarget.src = '/story_fallback_cultural.svg';
             }}
           />
 
@@ -70,12 +70,17 @@ export default function ArchiveStoryCard({ story, onSelect }) {
             </span>
           </div>
 
-          {/* Top-Right Demo Badge */}
-          {story.isDemo && (
-            <div className="absolute top-2.5 right-2.5">
+          {/* Top-Right Demo or Contributor Image Badge */}
+          <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5">
+            {story.isContributorImage && (
+              <span className="rounded-lg bg-emerald-950/90 text-emerald-300 px-2 py-0.5 text-[10px] font-bold border border-emerald-500/40 font-tamil shadow-xs">
+                பங்களிப்பாளர் படம்
+              </span>
+            )}
+            {story.isDemo && (
               <Badge variant="demo">மாதிரித் தரவு</Badge>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Bottom Audio / Duration Status */}
           <div className="absolute bottom-2.5 right-2.5">

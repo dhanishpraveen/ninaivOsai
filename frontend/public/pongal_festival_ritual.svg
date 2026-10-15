@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgPongal" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7C2D12" />
+      <stop offset="45%" stop-color="#9A3412" />
+      <stop offset="100%" stop-color="#431407" />
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="50%" cy="30%" r="50%">
+      <stop offset="0%" stop-color="#FDE047" stop-opacity="0.45" />
+      <stop offset="100%" stop-color="#F97316" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="potGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#9A3412" />
+      <stop offset="50%" stop-color="#EA580C" />
+      <stop offset="100%" stop-color="#7C2D12" />
+    </linearGradient>
+    <linearGradient id="fireGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#DC2626" />
+      <stop offset="50%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#FEF08A" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="720" fill="url(#bgPongal)" />
+  <circle cx="640" cy="240" r="280" fill="url(#sunGlow)" />
+
+  <!-- Pair of Traditional Tall Sugarcanes (கரும்புத் தோகை) on Left and Right -->
+  <g stroke="#15803D" stroke-width="14" stroke-linecap="round">
+    <!-- Left Sugarcane -->
+    <path d="M 180 620 Q 220 340 320 80" fill="none" />
+    <path d="M 320 80 Q 280 40 240 60" fill="none" stroke-width="6" />
+    <path d="M 320 80 Q 360 40 400 70" fill="none" stroke-width="6" />
+    <!-- Sugarcane Nodes -->
+    <line x1="184" y1="520" x2="204" y2="520" stroke="#86EFAC" stroke-width="5" />
+    <line x1="202" y1="420" x2="222" y2="420" stroke="#86EFAC" stroke-width="5" />
+    <line x1="228" y1="320" x2="248" y2="320" stroke="#86EFAC" stroke-width="5" />
+
+    <!-- Right Sugarcane -->
+    <path d="M 1100 620 Q 1060 340 960 80" fill="none" />
+    <path d="M 960 80 Q 1000 40 1040 60" fill="none" stroke-width="6" />
+    <path d="M 960 80 Q 920 40 880 70" fill="none" stroke-width="6" />
+    <!-- Sugarcane Nodes -->
+    <line x1="1096" y1="520" x2="1076" y2="520" stroke="#86EFAC" stroke-width="5" />
+    <line x1="1078" y1="420" x2="1058" y2="420" stroke="#86EFAC" stroke-width="5" />
+    <line x1="1052" y1="320" x2="1032" y2="320" stroke="#86EFAC" stroke-width="5" />
+  </g>
+
+  <!-- Village Hearth / Fireplace (அடுப்புக்கட்டி & விறகுத்தீ) -->
+  <g transform="translate(640, 560)">
+    <!-- Hearth Stones -->
+    <rect x="-140" y="-30" width="70" height="60" rx="14" fill="#1C1917" stroke="#78716C" stroke-width="3" />
+    <rect x="70" y="-30" width="70" height="60" rx="14" fill="#1C1917" stroke="#78716C" stroke-width="3" />
+    <rect x="-35" y="10" width="70" height="30" rx="8" fill="#1C1917" stroke="#78716C" stroke-width="2" />
+    
+    <!-- Dancing Hearth Fire (விறகு நெருப்பு) -->
+    <path d="M -60 10 Q -40 -90 0 -110 Q 40 -90 60 10 Q 0 -30 -60 10 Z" fill="url(#fireGrad)" opacity="0.95" />
+    <path d="M -30 10 Q -10 -70 0 -85 Q 10 -70 30 10 Z" fill="#FEF08A" />
+  </g>
+
+  <!-- The Decorated Clay Pongal Pot (புது மண்பானை) -->
+  <g transform="translate(640, 370)">
+    <!-- Pot Body -->
+    <path d="M -110 120 C -180 50 -160 -40 0 -60 C 160 -40 180 50 110 120 C 70 150 -70 150 -110 120 Z" fill="url(#potGrad)" stroke="#FED7AA" stroke-width="4" />
+    
+    <!-- Sacred Turmeric Plant tied around neck (மஞ்சள் கொத்து) -->
+    <path d="M -80 -60 Q 0 -45 80 -60" stroke="#CA8A04" stroke-width="12" fill="none" stroke-linecap="round" />
+    <path d="M -70 -70 Q -110 -110 -130 -80 Q -100 -50 -70 -70" fill="#22C55E" stroke="#15803D" stroke-width="2" />
+    <path d="M 70 -70 Q 110 -110 130 -80 Q 100 -50 70 -70" fill="#22C55E" stroke="#15803D" stroke-width="2" />
+    
+    <!-- Red Kumkum and Sandal paste markings (சந்தனம் & குங்குமப் பொட்டு) -->
+    <circle cx="0" cy="25" r="22" fill="#EAB308" />
+    <circle cx="0" cy="25" r="10" fill="#DC2626" />
+    <circle cx="-55" cy="20" r="14" fill="#EAB308" />
+    <circle cx="-55" cy="20" r="6" fill="#DC2626" />
+    <circle cx="55" cy="20" r="14" fill="#EAB308" />
+    <circle cx="55" cy="20" r="6" fill="#DC2626" />
+
+    <!-- Overflowing Sweet Milk Foam / Pongal (பொங்கலோ பொங்கல்!) -->
+    <path d="M -90 -60 C -110 -100 -60 -130 0 -130 C 60 -130 110 -100 90 -60 C 105 -20 120 40 110 50 C 95 60 90 -20 70 -50 C 0 -60 -70 -20 -90 50 C -105 40 -100 -20 -90 -60 Z" fill="#FFFBEB" stroke="#FEF08A" stroke-width="4" />
+    <!-- Cashews and Cardamom in Pongal -->
+    <ellipse cx="-20" cy="-90" rx="9" ry="5" fill="#D97706" transform="rotate(-30, -20, -90)" />
+    <ellipse cx="25" cy="-85" rx="8" ry="5" fill="#D97706" transform="rotate(25, 25, -85)" />
+    <circle cx="5" cy="-105" r="4" fill="#78350F" />
+  </g>
+
+  <!-- Title Banner Card in Pure Tamil -->
+  <rect x="340" y="630" width="600" height="60" rx="16" fill="#1C1917" fill-opacity="0.9" stroke="#F59E0B" stroke-width="2" />
+  <text x="640" y="668" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="bold" fill="#FDE68A" text-anchor="middle" letter-spacing="1">
+    பங்குனி உத்திர பொங்கல் • குலதெய்வ வழிபாடு (Madurai)
+  </text>
+</svg>

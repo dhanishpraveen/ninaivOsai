@@ -23,6 +23,8 @@ import {
   Check,
   Send,
   ExternalLink,
+  Image as ImageIcon,
+  Trash2,
 } from 'lucide-react';
 import Badge from '../components/Badge';
 import AudioUploader from '../components/AudioUploader';
@@ -129,8 +131,89 @@ export default function PreserveStoryPage() {
       if (audioData?.url) {
         URL.revokeObjectURL(audioData.url);
       }
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
     };
-  }, [audioData]);
+  }, [audioData, imagePreview]);
+
+  // Story Image Upload State (Task 3)
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageError, setImageError] = useState(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImageError(null);
+
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      setImageError('செல்லுபடியாகாத கோப்பு வடிவம். JPEG, PNG அல்லது WebP படங்களை மட்டுமே பதிவேற்ற முடியும்.');
+      return;
+    }
+
+    const maxSize = 5 * 1024 * 1024; // 5 MB
+    if (file.size > maxSize) {
+      setImageError('படக் கோப்பின் அளவு 5MB-க்கு குறைவாக இருக்க வேண்டும்.');
+      return;
+    }
+
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+    setImageFile(file);
+    setImagePreview(previewUrl);
+  };
+
+  const handleImageRemove = () => {
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImageFile(null);
+    setImagePreview(null);
+    setImageError(null);
+  };
+
+  const handleResetForNewStory = () => {
+    if (audioData?.url) {
+      URL.revokeObjectURL(audioData.url);
+    }
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setAudioData(null);
+    setTranscriptionState('idle');
+    setTranscriptionData(null);
+    setRawTranscript('');
+    setEditedTranscript('');
+    setTranscriptionError(null);
+    setImageFile(null);
+    setImagePreview(null);
+    setImageError(null);
+    setFormData({
+      title: '',
+      contributorName: '',
+      uploaderName: '',
+      villageOrTown: '',
+      district: 'Thanjavur (தஞ்சாவூர்)',
+      customDistrict: '',
+      category: 'Agriculture',
+      customCategory: '',
+      cropOrTopic: 'Paddy / Rice (நெல்)',
+      tags: 'irrigation, organic farming, cauvery delta',
+      recordingDate: new Date().toISOString().split('T')[0],
+      description: '',
+      consentAgreed: false,
+    });
+    setFormErrors({});
+    setBannerNotice(null);
+    setPublishedResult(null);
+    setCurrentStep(1);
+  };
 
   const handleAudioSelected = (data) => {
     if (audioData?.url && audioData.url !== data.url) {
@@ -433,6 +516,8 @@ export default function PreserveStoryPage() {
         originalTranscript: rawTranscript,
         consentConfirmed: formData.consentAgreed,
         audioDurationSeconds: audioData.duration,
+        imageFile: imageFile,
+        imageFilename: imageFile ? imageFile.name : null,
       });
 
       setPublishedResult(result);
@@ -455,28 +540,6 @@ export default function PreserveStoryPage() {
     } finally {
       setIsPublishing(false);
     }
-  };
-
-  const handleResetForNewStory = () => {
-    handleAudioRemoved();
-    setFormData({
-      title: '',
-      contributorName: '',
-      uploaderName: '',
-      villageOrTown: '',
-      district: 'Thanjavur (தஞ்சாவூர்)',
-      customDistrict: '',
-      category: 'Agriculture',
-      customCategory: '',
-      cropOrTopic: 'Paddy / Rice (நெல்)',
-      tags: '',
-      recordingDate: new Date().toISOString().split('T')[0],
-      description: '',
-      consentAgreed: false,
-    });
-    setPublishedResult(null);
-    setCurrentStep(1);
-    setBannerNotice(null);
   };
 
   return (
@@ -1268,6 +1331,99 @@ export default function PreserveStoryPage() {
             </div>
           </div>
 
+          {/* Optional Story Image Upload Section (Task 3) */}
+          <div className="rounded-2xl border border-ivory-300 bg-ivory-50/50 p-5 space-y-3 font-tamil">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-ivory-200 pb-3">
+              <div className="flex items-center gap-2">
+                <ImageIcon className="h-4 w-4 text-forest-700" />
+                <h3 className="text-xs sm:text-sm font-bold text-charcoal-900">
+                  கதைக்கான படத்தைச் சேர்க்கவும்
+                </h3>
+                <span className="text-[10px] text-charcoal-500 bg-white px-2 py-0.5 rounded-full border border-ivory-200">
+                  விருப்பத்திற்குரியது
+                </span>
+              </div>
+              <p className="text-[11px] text-charcoal-500">
+                JPEG, PNG அல்லது WebP (அதிகபட்சம் 5MB)
+              </p>
+            </div>
+
+            <p className="text-xs text-charcoal-600 leading-relaxed">
+              கதைக்கான படம் விருப்பத்திற்குரியது. நீங்கள் படம் சேர்க்காவிட்டாலும் கதை வெற்றிகரமாகப் பதிவிடப்படும்; காப்பகத்தில் பொருத்தமான மரபுச்சின்னம் இயல்பாகக் காட்டப்படும்.
+            </p>
+
+            {imageError && (
+              <div className="rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-800 flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-rose-600 shrink-0" />
+                <span>{imageError}</span>
+              </div>
+            )}
+
+            {!imagePreview ? (
+              <div className="flex items-center gap-3 pt-1">
+                <label className="inline-flex items-center gap-2 rounded-xl bg-white border border-forest-600 text-forest-800 hover:bg-forest-50 px-4 py-2 text-xs font-semibold shadow-2xs transition-colors cursor-pointer">
+                  <UploadCloud className="h-4 w-4 text-forest-700" />
+                  <span>படத்தைத் தேர்ந்தெடுக்கவும்</span>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </label>
+                <span className="text-[11px] text-charcoal-400">
+                  எந்தப் படமும் தேர்ந்தெடுக்கப்படவில்லை
+                </span>
+              </div>
+            ) : (
+              <div className="rounded-xl bg-white p-3.5 border border-ivory-300 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5 w-full sm:w-auto">
+                  <div className="relative h-16 w-24 rounded-lg overflow-hidden border border-ivory-200 bg-ivory-100 shrink-0">
+                    <img
+                      src={imagePreview}
+                      alt="Story Preview"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="space-y-0.5 truncate">
+                    <strong className="text-xs font-bold text-charcoal-900 block truncate">
+                      {imageFile?.name || 'தேர்ந்தெடுக்கப்பட்ட படம்'}
+                    </strong>
+                    <span className="text-[11px] text-charcoal-500 font-mono block">
+                      {imageFile ? `${(imageFile.size / (1024 * 1024)).toFixed(2)} MB` : ''} • {imageFile?.type || 'image'}
+                    </span>
+                    <span className="text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
+                      <Check className="h-3 w-3 text-emerald-600" />
+                      பதிவேற்றத்திற்கு தயார்
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                  <label className="inline-flex items-center gap-1.5 rounded-xl border border-ivory-300 bg-white px-3 py-1.5 text-xs font-semibold text-charcoal-700 hover:bg-ivory-100 transition-colors cursor-pointer">
+                    <RefreshCw className="h-3.5 w-3.5 text-charcoal-500" />
+                    <span>படத்தை மாற்றவும்</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={handleImageRemove}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition-colors"
+                  >
+                    <Trash2 className="h-3.5 w-3.5 text-rose-600" />
+                    <span>படத்தை நீக்கவும்</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Mandatory Archival Consent Section */}
           <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-2">
             <label className="flex items-start gap-3 cursor-pointer">
@@ -1440,6 +1596,32 @@ export default function PreserveStoryPage() {
                 </div>
               )}
 
+              {/* Story Image Review */}
+              <div className="pt-2 border-t border-ivory-200">
+                <span className="text-charcoal-400 block text-[11px] font-tamil">கதைக்கான படம்:</span>
+                {imagePreview ? (
+                  <div className="flex items-center gap-2 mt-1">
+                    <img
+                      src={imagePreview}
+                      alt="Story preview"
+                      className="h-10 w-14 object-cover rounded border border-ivory-300"
+                    />
+                    <div className="truncate">
+                      <span className="font-semibold text-charcoal-800 text-[11px] block truncate font-tamil">
+                        {imageFile?.name || 'படம் இணைக்கப்பட்டுள்ளது'}
+                      </span>
+                      <span className="text-[10px] text-forest-700 font-mono">
+                        {(imageFile?.size / 1024).toFixed(1)} KB
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <span className="text-charcoal-500 text-[11px] italic font-tamil">
+                    படம் சேர்க்கப்படவில்லை (மரபுச்சின்னம் இயல்பாகக் காட்டப்படும்)
+                  </span>
+                )}
+              </div>
+
               <div className="pt-2 border-t border-ivory-200">
                 <span className="text-charcoal-400 block text-[11px] font-tamil">சமூக ஆவண ஒப்புதல்:</span>
                 <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800 mt-0.5 font-tamil">
@@ -1536,6 +1718,15 @@ export default function PreserveStoryPage() {
               <div className="flex items-center justify-between pb-2 border-b border-ivory-200 font-mono text-[11px]">
                 <span className="text-charcoal-500 font-tamil">ஒலி சேமிப்புப் பாதை:</span>
                 <span className="text-forest-900">{publishedResult.audio_storage_path}</span>
+              </div>
+            )}
+
+            {publishedResult?.image_storage_path && (
+              <div className="flex items-center justify-between pb-2 border-b border-ivory-200 font-mono text-[11px]">
+                <span className="text-charcoal-500 font-tamil">படம் சேமிப்புப் பாதை:</span>
+                <span className="text-forest-900 truncate max-w-[200px]" title={publishedResult.image_storage_path}>
+                  {publishedResult.image_storage_path}
+                </span>
               </div>
             )}
 

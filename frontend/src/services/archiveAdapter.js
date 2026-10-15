@@ -34,6 +34,19 @@ export async function fetchArchiveFromBackend(limit = 100, category = null) {
   return res.json();
 }
 
+const DEMO_IMAGES_MAP = {
+  'demo-story-01': '/farmer_ramasamy.jpg',
+  'demo-story-02': '/farmer_muthulakshmi.jpg',
+  'demo-story-03': '/water_sluice_irrigation.jpg',
+  'demo-story-04': '/kongu_handloom_weaving.jpg',
+  'demo-story-05': '/heritage_seed_preservation.jpg',
+  'demo-story-06': '/tirunelveli_villupaattu.svg',
+  'demo-story-07': '/kolli_herbal_medicine.svg',
+  'demo-story-08': '/chettinad_terracotta_craft.svg',
+  'demo-story-09': '/pongal_festival_ritual.svg',
+  'demo-story-10': '/traditional_fermented_food.svg',
+};
+
 /**
  * Normalizes a raw Supabase story record into the canonical Archive Story shape.
  */
@@ -69,8 +82,22 @@ export function normalizeStoryRecord(raw) {
   const village = raw.village_or_town || '';
   const region = village && district ? `${village}, ${district}` : district || village || 'Tamil Nadu';
 
+  const storyIdStr = String(raw.id);
+  const isDemoStory = Boolean(raw.is_demo ?? raw.isDemo ?? false);
+  const isContributorImage = Boolean(raw.is_contributor_image ?? raw.isContributorImage ?? false);
+
+  let storyImage = raw.image || raw.image_url || null;
+  if (!storyImage) {
+    if (isDemoStory && DEMO_IMAGES_MAP[storyIdStr]) {
+      storyImage = DEMO_IMAGES_MAP[storyIdStr];
+    } else if (isDemoStory) {
+      const matchingMock = PHASE7_ARCHIVE_MOCK_STORIES.find((m) => m.id === storyIdStr);
+      storyImage = matchingMock?.image || null;
+    }
+  }
+
   return {
-    id: String(raw.id),
+    id: storyIdStr,
     title: raw.title || 'தலைப்பற்ற வாய்மொழிப் பதிவு',
     titleEn: raw.title_en || raw.titleEn || null,
     summary: raw.summary || raw.description || '',
@@ -92,8 +119,9 @@ export function normalizeStoryRecord(raw) {
     hasAudio: hasAudio,
     tags: tags,
     keywords: Array.isArray(raw.keywords) ? raw.keywords : [],
-    image: raw.image || '/farmer_ramasamy.jpg',
-    isDemo: Boolean(raw.is_demo ?? raw.isDemo ?? false),
+    image: storyImage,
+    isContributorImage: isContributorImage,
+    isDemo: isDemoStory,
     source: raw.source || 'supabase',
     publicationStatus: raw.publication_status || 'published',
   };

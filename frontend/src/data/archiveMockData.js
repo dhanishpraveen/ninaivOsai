@@ -157,7 +157,7 @@ export const PHASE7_ARCHIVE_MOCK_STORIES = [
     audioDurationFormatted: '04:40',
     audioUrl: null, // No audio
     hasAudio: false,
-    image: '/farmer_ramasamy.jpg',
+    image: '/chettinad_terracotta_craft.svg',
   },
   {
     id: 'story-mock-05',
@@ -187,7 +187,7 @@ export const PHASE7_ARCHIVE_MOCK_STORIES = [
     audioDurationFormatted: '03:30',
     audioUrl: '/test_sample_tamil.wav',
     hasAudio: true,
-    image: '/tamil_farmer_hero.jpg',
+    image: '/water_sluice_irrigation.jpg',
   },
   {
     id: 'story-mock-06',
@@ -217,7 +217,7 @@ export const PHASE7_ARCHIVE_MOCK_STORIES = [
     audioDurationFormatted: '02:58',
     audioUrl: null, // No audio
     hasAudio: false,
-    image: '/farmer_ramasamy.jpg',
+    image: '/traditional_fermented_food.svg',
   },
   {
     id: 'story-mock-07',
@@ -247,7 +247,7 @@ export const PHASE7_ARCHIVE_MOCK_STORIES = [
     audioDurationFormatted: '03:45',
     audioUrl: '/test_sample_tamil.wav',
     hasAudio: true,
-    image: '/farmer_muthulakshmi.jpg',
+    image: '/kolli_herbal_medicine.svg',
   },
   {
     id: 'story-mock-08',
@@ -277,7 +277,7 @@ export const PHASE7_ARCHIVE_MOCK_STORIES = [
     audioDurationFormatted: '03:18',
     audioUrl: null, // No audio
     hasAudio: false,
-    image: '/farmer_ramasamy.jpg',
+    image: '/kongu_handloom_weaving.jpg',
   },
   {
     id: 'story-mock-09',
@@ -307,7 +307,7 @@ export const PHASE7_ARCHIVE_MOCK_STORIES = [
     audioDurationFormatted: '02:34',
     audioUrl: '/test_sample_tamil.wav',
     hasAudio: true,
-    image: '/tamil_farmer_hero.jpg',
+    image: '/heritage_seed_preservation.jpg',
   },
   {
     id: 'story-mock-10',
@@ -337,6 +337,6 @@ export const PHASE7_ARCHIVE_MOCK_STORIES = [
     audioDurationFormatted: '03:35',
     audioUrl: null, // No audio
     hasAudio: false,
-    image: '/farmer_muthulakshmi.jpg',
+    image: '/tirunelveli_villupaattu.svg',
   },
 ];
